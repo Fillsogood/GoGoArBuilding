@@ -174,7 +174,7 @@ public class SIMS_Demo : MonoBehaviour
         GameObject.Find("ifInsadminID").GetComponent<InputField>().text = "";
         GameObject.Find("ifInsadminname").GetComponent<InputField>().text = "";
         GameObject.Find("ifInsadminetc").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsState").GetComponent<InputField>().text = "";
+        GameObject.Find("DdInsState").GetComponent<Dropdown>().value =0;
         GameObject.Find("ifPicturePath").GetComponent<InputField>().text = "";
     }
 
