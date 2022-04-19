@@ -7,9 +7,9 @@ public class ModelIni : MonoBehaviour
      void Start()
      {
         Transform points = GameObject.Find("StartPoint").GetComponent<Transform>();     
-        GameObject Building= Resources.Load<GameObject>("BuildingPrefab/BuildingStructure");
+        GameObject Building= Resources.Load<GameObject>("BuildingPrefab/GNU-LOD300");
         //GameObject Building= Resources.Load<GameObject>("BuildingPrefab/"+ModelName);
-        ChangeLayersRecursively( Building.transform, "wall"); 
+        //ChangeLayersRecursively( Building.transform, "wall"); 
         GameObject Instance = (GameObject) Instantiate(Building, points.position, points.rotation );   
          
      }
