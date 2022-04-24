@@ -1200,7 +1200,7 @@ GameObject:
   - component: {fileID: 397532725}
   - component: {fileID: 397532724}
   m_Layer: 5
-  m_Name: txInsnetc
+  m_Name: txtInsEtc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1279,7 +1279,7 @@ GameObject:
   - component: {fileID: 440321233}
   - component: {fileID: 440321232}
   m_Layer: 5
-  m_Name: txtInsInspectorname
+  m_Name: txtInsName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1805,7 +1805,7 @@ GameObject:
   - component: {fileID: 527805956}
   - component: {fileID: 527805955}
   m_Layer: 5
-  m_Name: txInsposition
+  m_Name: txtInsPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2678,7 +2678,7 @@ GameObject:
   - component: {fileID: 854612245}
   - component: {fileID: 854612244}
   m_Layer: 5
-  m_Name: ifInsadminID
+  m_Name: ifAdminID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2821,7 +2821,7 @@ GameObject:
   - component: {fileID: 861683959}
   - component: {fileID: 861683958}
   m_Layer: 5
-  m_Name: ifInsadminname
+  m_Name: ifAdminName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3374,7 +3374,7 @@ GameObject:
   - component: {fileID: 969033167}
   - component: {fileID: 969033166}
   m_Layer: 5
-  m_Name: ifInsInspectorname
+  m_Name: ifInsName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4134,7 +4134,7 @@ GameObject:
   - component: {fileID: 1164728598}
   - component: {fileID: 1164728597}
   m_Layer: 5
-  m_Name: txtInsadminname
+  m_Name: txtAdminName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5415,7 +5415,7 @@ GameObject:
   - component: {fileID: 1589588359}
   - component: {fileID: 1589588358}
   m_Layer: 5
-  m_Name: ifInsadminetc
+  m_Name: ifAdminEtc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5558,7 +5558,7 @@ GameObject:
   - component: {fileID: 1596531871}
   - component: {fileID: 1596531870}
   m_Layer: 5
-  m_Name: ifInsposition
+  m_Name: ifInsPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6935,7 +6935,7 @@ GameObject:
   - component: {fileID: 1920330490}
   - component: {fileID: 1920330489}
   m_Layer: 5
-  m_Name: ifInsetc
+  m_Name: ifInsEtc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7699,7 +7699,7 @@ GameObject:
   - component: {fileID: 2081228898}
   - component: {fileID: 2081228897}
   m_Layer: 5
-  m_Name: txtInsadminID
+  m_Name: txtAdminID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7950,7 +7950,7 @@ GameObject:
   - component: {fileID: 2135915729}
   - component: {fileID: 2135915728}
   m_Layer: 5
-  m_Name: txInsInformation
+  m_Name: txtAdminEtc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
