@@ -14,6 +14,7 @@ public class GyroScope : MonoBehaviour
     bool Istri;
     Transform xText;
     Transform yText;
+    Vector3 m_PlayerRot;
   void Start()
     {
         Capsule =GameObject.Find("Capsules(Clone)").transform.Find("Capsule").gameObject;
@@ -32,22 +33,21 @@ public class GyroScope : MonoBehaviour
         pos = this.gameObject.transform.position;
         x.text=" X:"+pos.x;
         y.text="Y:"+pos.z;
-        Capsule.transform.Rotate(0,-Input.gyro.rotationRateUnbiased.y*1,0);     
-        Vector3 angleAcceler = Input.acceleration;      
+        gyroupdate();    
     }
     void FixedUpdate()
     {
         StropToWall();
         AddRigidbody();
-        if(Input.gyro.userAcceleration.y>0.2&&!isBorder)
+        if(average()>=0.0612304173409939 && average()<=0.09&&!isBorder)
         {
-            Capsule.transform.Translate(-speed,0,0);
-           
+            //이동
+            Capsule.transform.Translate(-speed,0,0); 
         }
-        else if(Capsule.activeSelf==false)
+        else if(average()>=-0.00394487800076604||average()<=0.00479192985221744 &&!isBorder)
         {
-
-        }
+           //멈추고 돌때...
+        }      
          
         if(Istri&&Capsule.activeSelf==true)
         {           
@@ -67,6 +67,30 @@ public class GyroScope : MonoBehaviour
            
         }
     }
+     void gyroupdate()
+	{   
+       
+        m_PlayerRot.y -= Input.gyro.rotationRate.z*1.0f;
+		Capsule.transform.eulerAngles = m_PlayerRot;
+        
+		
+	}
+    double average()
+    {
+        double[] arr = new double[98]; //가속도 센서 1초 평균 98개의 데이터 추출
+        double result = 0;
+
+        for(int i=0;i<arr.Length;i++)
+        {
+            arr[i] = Input.gyro.userAcceleration.y; 
+        }
+        for(int i=0;i<arr.Length;i++)
+        {
+            result += arr[i];
+        }
+        return result /= arr.Length;
+    }
+
     void StropToWall()
     {
         Debug.DrawRay(transform.position,-transform.right*0.5f,Color.green);
@@ -77,4 +101,5 @@ public class GyroScope : MonoBehaviour
          Debug.DrawRay(transform.position,-transform.right*0.8f,Color.red);
         Istri = Physics.Raycast(transform.position,-transform.right,0.8f,LayerMask.GetMask("rb"));
     }
+    
 }

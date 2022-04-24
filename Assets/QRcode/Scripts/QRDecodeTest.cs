@@ -31,15 +31,20 @@ public class QRDecodeTest : MonoBehaviour
 	public void qrScanFinished(string dataText)
 	{
         Debug.Log(dataText);
-
+		Debug.Log(isOpenBrowserIfUrl);
 		if (isOpenBrowserIfUrl) {
 			if (Utility.CheckIsUrlFormat(dataText))
 			{
 				if (!dataText.Contains("http://") && !dataText.Contains("https://"))
 				{
-					dataText = "http://" + dataText;
+					//dataText = "http://" + dataText;
+					
+					 var msg = dataText.Split('/');
+					 dataText= msg[2];
 				}
-				Application.OpenURL(dataText);
+				dataText = "1"; //   <================================================================= 여기에 마커 모델 숫자 들어와야함 숫자만
+				SingletonModelIdx.instance.ModelIdx =Convert.ToInt32(dataText);
+				//Application.OpenURL(dataText);
 				GotoNextScene("Test");
 			}
 		}

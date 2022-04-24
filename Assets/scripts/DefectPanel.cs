@@ -2,39 +2,56 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
-
-
-public class Defect : MonoBehaviour
+public class DefectPanel : MonoBehaviour
 {   
-
-    Transform Btn_BackAr;
-    Transform Defect_information;
+    // Transform Btn_BackAr;
+    // Transform Defect_information;
+    
+    
     Transform Map;
+    //public int DefectIdx{get;set;}
 
+    SIMS_Demo _Sims;
+  
     void Start()
     {
-        Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
-        GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
-        DefectImg.SetActive(false);
+        _Sims = GameObject.Find("TargetManager").GetComponent<SIMS_Demo>();
+       // Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
+        //Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
+        //GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
+        //DefectImg.SetActive(false);
     }
 
    public void OnTriggerEnter (Collider other)
     {    
+       GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
         Map = GameObject.Find("Canvas").transform.Find("MiniMap");   
         if(other.tag=="defect"&&Map.gameObject.activeSelf == true)
         {       
-            Defect_information.gameObject.SetActive(true);
+            Defectpanel.gameObject.SetActive(true);
+            _Sims.DefectIdx= int.Parse(this.name);
+            Debug.Log( _Sims.DefectIdx+"DefectPanel");
+            
             //하자 이미지 불러오기
-            GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
-            DefectImg.SetActive(true);
-            Renderer a = DefectImg.GetComponent<Renderer>();
-            a.material.SetTexture("_MainTex",Resources.Load("Texture/a") as Texture);//a에다 DB 이미지파일 넣기       
+            //GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
+            //DefectImg.SetActive(true);
+            //Renderer a = DefectImg.GetComponent<Renderer>();
+            //a.material.SetTexture("_MainTex",Resources.Load("Texture/a") as Texture);//a에다 DB 이미지파일 넣기       
         }   
     }
+
+    // public int GetDefectIdx()
+    // {
+        
+    //     return DefectIdx;
+    // }
    public void DefectBtn()
    {
+        GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
+        Defectpanel.SetActive(false);
+        GameObject Panal= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
+        Panal.SetActive(true);
+       /*
         Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
         Map = GameObject.Find("Canvas").transform.Find("MiniMap");
         Btn_BackAr = GameObject.Find("Canvas").transform.Find("Btn_BackAr");
@@ -57,15 +74,18 @@ public class Defect : MonoBehaviour
         }
         
         CapBuildingStructuresul.SetActive(false);
+        */
    }
    public void CloseBtn()
    {
+       GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
+        Defectpanel.SetActive(false);
+        /*
         Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");          
         Defect_information.gameObject.SetActive(false);
         //하자 이미지 끄기
         GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
         DefectImg.SetActive(false);
-        
-        
+        */      
    }
 }

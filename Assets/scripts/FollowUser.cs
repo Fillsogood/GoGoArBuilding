@@ -8,7 +8,7 @@ public class FollowUser : MonoBehaviour
     GameObject Target; // Capsule 게임오브젝트 가져오기
     public Transform TargetCapsule;
     public Transform Navigation;
-
+    
     void Update()
     {
         if(TargetCapsule==null)

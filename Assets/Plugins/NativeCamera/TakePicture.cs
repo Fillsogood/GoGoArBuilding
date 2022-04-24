@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class Camera : MonoBehaviour
+public class TakePicture : MonoBehaviour
 {
     
     public void TakePictureButton()
     {
-        TakePicture(512);
+        TakePicturecamera(512);
     }
 
-    private void TakePicture(int maxSize)
+    private void TakePicturecamera(int maxSize)
     {
         NativeCamera.Permission permission =NativeCamera.TakePicture((path)=>
         {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731713, g: 0.13414736, b: 0.12107852, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: c3f0123e9127a405888393bf61d75765, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: c3f0123e9127a405888393bf61d75765,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -236,7 +237,7 @@ MonoBehaviour:
   resetBtn: {fileID: 1863062879}
   scanLineObj: {fileID: 694556625}
   torchImage: {fileID: 1418039534}
-  isOpenBrowserIfUrl: 0
+  isOpenBrowserIfUrl: 1
 --- !u!4 &153917684
 Transform:
   m_ObjectHideFlags: 0
@@ -461,6 +462,49 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!1 &740119375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 740119377}
+  - component: {fileID: 740119376}
+  m_Layer: 0
+  m_Name: Singleton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &740119376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740119375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605f52949dc85064baac267da3652a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &740119377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740119375}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &841200352
 GameObject:
   m_ObjectHideFlags: 0
@@ -1048,7 +1092,8 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 54b2a019ebe77804b8a5c0b93b23a689, type: 3}
 --- !u!114 &1295511700 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 11455064, guid: 54b2a019ebe77804b8a5c0b93b23a689, type: 3}
+  m_CorrespondingSourceObject: {fileID: 11455064, guid: 54b2a019ebe77804b8a5c0b93b23a689,
+    type: 3}
   m_PrefabInstance: {fileID: 1295511699}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
