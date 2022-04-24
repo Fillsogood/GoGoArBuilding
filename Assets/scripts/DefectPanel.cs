@@ -3,23 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class DefectPanel : MonoBehaviour
-{   
-    // Transform Btn_BackAr;
-    // Transform Defect_information;
-    
-    
+{
     Transform Map;
-    //public int DefectIdx{get;set;}
-
     SIMS_Demo _Sims;
   
     void Start()
     {
         _Sims = GameObject.Find("TargetManager").GetComponent<SIMS_Demo>();
-       // Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
-        //Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
-        //GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
-        //DefectImg.SetActive(false);
     }
 
    public void OnTriggerEnter (Collider other)
@@ -31,22 +21,11 @@ public class DefectPanel : MonoBehaviour
             Defectpanel.gameObject.SetActive(true);
             _Sims.DefectIdx= int.Parse(this.name);
             Debug.Log( _Sims.DefectIdx+"DefectPanel");
-            
-            //하자 이미지 불러오기
-            //GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
-            //DefectImg.SetActive(true);
-            //Renderer a = DefectImg.GetComponent<Renderer>();
-            //a.material.SetTexture("_MainTex",Resources.Load("Texture/a") as Texture);//a에다 DB 이미지파일 넣기       
         }   
     }
 
-    // public int GetDefectIdx()
-    // {
-        
-    //     return DefectIdx;
-    // }
-   public void DefectBtn()
-   {
+    public void DefectBtn()
+    {
         GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
         Defectpanel.SetActive(false);
         GameObject Panal= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
@@ -75,7 +54,7 @@ public class DefectPanel : MonoBehaviour
         
         CapBuildingStructuresul.SetActive(false);
         */
-   }
+    }
    public void CloseBtn()
    {
        GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;

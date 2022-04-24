@@ -34,7 +34,6 @@ public class ViewSwitch : MonoBehaviour
         }
     }
 
-
     public void DisableExternalModel()
     {
         // FeedbackText.text = "Disable ";

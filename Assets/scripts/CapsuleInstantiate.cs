@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CpasuleIni : MonoBehaviour
+public class CapsuleInstantiate : MonoBehaviour
 {
   void Start()
     {
