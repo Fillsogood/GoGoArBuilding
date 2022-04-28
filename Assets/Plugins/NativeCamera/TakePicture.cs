@@ -28,6 +28,11 @@ public class TakePicture : MonoBehaviour
         }, maxSize);
         Debug.Log("Permission result:"+permission);
     }
+    
+    public void Text1()
+    {
+        GameObject.Find("Canvas").transform.Find("Panel").transform.Find("ifPicturePath").GetComponent<InputField>().text = "/DCIM/Camera/20220427_185043.jpg";
+    }
    
 }
 

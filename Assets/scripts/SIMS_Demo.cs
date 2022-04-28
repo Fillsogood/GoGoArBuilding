@@ -111,8 +111,8 @@ public class InspectionDto
 
 public class SIMS_Demo : MonoBehaviour
 {
-    private string serverPath = "http://localhost:8080";
-    //private string serverPath = "http://192.168.219.104:8080";
+    //private string serverPath = "http://localhost:8080";
+    private string serverPath = "http://192.168.219.181:8080";
 
     private string serverPort = "8080";
 
@@ -134,7 +134,7 @@ public class SIMS_Demo : MonoBehaviour
 
     private void UpdateServerIpPort()
     {
-        string ip = "localhost";
+        string ip = "192.168.219.181";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -214,7 +214,7 @@ public class SIMS_Demo : MonoBehaviour
 
         try
         {
-            _Ins.state = (GameObject.Find("DdInsState").GetComponent<Dropdown>().value)+1;//
+            _Ins.state = (GameObject.Find("DdAdminState").GetComponent<Dropdown>().value)+1;//
         }
         catch (FormatException)
         {
