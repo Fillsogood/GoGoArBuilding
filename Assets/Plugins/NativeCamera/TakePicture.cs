@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class Camera : MonoBehaviour
+public class TakePicture : MonoBehaviour
 {
     
     public void TakePictureButton()
     {
-        TakePicture(512);
+        TakePicturecamera(512);
     }
 
-    private void TakePicture(int maxSize)
+    private void TakePicturecamera(int maxSize)
     {
         NativeCamera.Permission permission =NativeCamera.TakePicture((path)=>
         {
@@ -27,6 +27,11 @@ public class Camera : MonoBehaviour
             }
         }, maxSize);
         Debug.Log("Permission result:"+permission);
+    }
+    
+    public void Text1()
+    {
+        GameObject.Find("Canvas").transform.Find("Panel").transform.Find("ifPicturePath").GetComponent<InputField>().text = "/DCIM/Camera/20220427_185043.jpg";
     }
    
 }

@@ -13,50 +13,112 @@ using UnityEngine.Android;
 [System.Serializable]
 public class Model
 {
+    public int idx;
     public int model_id;
+    public string model_3dfile_name;
     public string model_3dfile;
+    public string model_3dfile_type;
+    public string model_3dfile_size;
+    public string model_2dfile_name;
     public string model_2dfile;
+    public string model_2dfile_type;
+    public string model_2dfile_size;
+
+}
+
+[System.Serializable]
+public class InsResponse
+{
+    public string api_result;
+    public string err_message;
+    public List<InspectionDto> data = new List<InspectionDto>();
+}
+
+[System.Serializable]
+public class ModelResponse
+{
+    public string api_result;
+    public string err_message;
+    public List<InspectionDto> data = new List<InspectionDto>();
 }
 
 [System.Serializable]
 public class Inspection
 {
-	public int ins_id;
-	public string ins_date;
-	public string inspector;
-	public int damage_type;
-	public string damage_object;
-	public int damage_loc_x;
-	public int damage_loc_y;
-	public int damage_loc_z;
-
-	public string image_name;
-	public string image_size;
-	public string image_type;
-	public byte[] image; 
-
+	public int idx;
+    public int model_idx;
+    public string inspector_name;
     public string admin_name;
+	public int damage_type;
+	public int damage_object;
+	public float damage_loc_x;
+	public float damage_loc_y;
+	public float damage_loc_z;
+	public string ins_date;
+    public string admin_date;
+    public string inspector_etc;
     public string admin_etc;
     public int state;
+	public string ins_image_name;
+	public string ins_image_url;
+	public string ins_image_size;
+	public string ins_image_type;
+	public byte[] ins_bytes; 
+    public string ad_image_name;
+	public string ad_image_url;
+	public string ad_image_size;
+	public string ad_image_type;
+	public byte[] ad_bytes;
 
+    public Inspection () {} 
+    public Inspection (int _idx)
+    {
+        idx= _idx;
+    } 
+}
+
+[System.Serializable]
+public class InspectionDto
+{
+	public int idx;
+    public int model_idx;
+    public string inspector_name;
+    public string admin_name;
+	public int damage_type;
+	public int damage_object;
+	public float damage_loc_x;
+	public float damage_loc_y;
+	public float damage_loc_z;
+	public string ins_date;
+    public string admin_date;
+    public string inspector_etc;
+    public string admin_etc;
+    public int state;
+	public string ins_image_name;
+	public string ins_image_url;
+	public string ins_image_size;
+	public string ins_image_type;
+    public string ad_image_name;
+	public string ad_image_url;
+	public string ad_image_size;
+	public string ad_image_type;
+    public string damage_name;
+    public string object_name;
+    public string state_name;
+	public byte[] ins_bytes; 
+	public byte[] ad_bytes;
 }
 
 public class SIMS_Demo : MonoBehaviour
 {
-    private string serverPath = "http://localhost:8080";
-    //private string serverPath = "http://192.168.219.104:8080";
+    //private string serverPath = "http://localhost:8080";
+    private string serverPath = "http://192.168.219.181:8080";
 
     private string serverPort = "8080";
 
+    public int DefectIdx{get;set;}
 
-    public static string strToEdit = "";
-
-    private bool isConsoleShowing = true;
-
-    private float ta_left;
-    private float ta_top;
-    private float ta_width;
-    private float ta_height;
+    Vector3 DefectPosition;
 
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
@@ -64,16 +126,15 @@ public class SIMS_Demo : MonoBehaviour
     void Start()
     {
         if (Application.platform == RuntimePlatform.Android)
-        {  
-
+        { 
             StartCoroutine("CheckPermissionAndroid");
         }
-        //SimsLog(Application.persistentDataPath);
+        Start_DefectInstantiate();
     }
 
     private void UpdateServerIpPort()
     {
-        string ip = "localhost";
+        string ip = "192.168.219.181";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -87,184 +148,117 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-    private void UpdateDataModel()
+    // 점검자 정보 조회 inputfeild
+    private void UpdateDataFormIns(InspectionDto ins)
     {
-        UpdateServerIpPort();
-
-        try
+        GameObject.Find("ifInsName").GetComponent<InputField>().text = ins.inspector_name;
+        GameObject.Find("ifInsDate").GetComponent<InputField>().text = ins.ins_date;
+        switch(ins.state)
         {
-            _model.model_id = Convert.ToInt32(GameObject.Find("ifModelID").GetComponent<InputField>().text.ToString());
+            case 1 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 전"; break;
+            case 2 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 중"; break;
+            case 3 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 완료"; break;
         }
-        catch (FormatException)
-        {
-            _model.model_id = -1;
-        }
-        _model.model_3dfile = GameObject.Find("if3Dfile").GetComponent<InputField>().text.ToString();
-        _model.model_2dfile = GameObject.Find("if2Dfile").GetComponent<InputField>().text.ToString();
-
-        Debug.Log("Model DB : " + _model.model_id.ToString() + "/" + _model.model_3dfile + "/" + _model.model_2dfile);
-   
-
+        GameObject.Find("ifInsEtc").GetComponent<InputField>().text = ins.inspector_etc;
+        GameObject.Find("ifInsPosition").GetComponent<InputField>().text = ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
+        GameObject.Find("ifAdminID").GetComponent<InputField>().text = ins.idx.ToString();
+        GameObject.Find("DdAdminState").GetComponent<Dropdown>().value = ins.state -1;
+        ViewImage("imageView", ins.ins_image_url);
     }
 
-    private void UpdateDataFormModel()
+    // 점검자 정보 조회 inputfeild Clear
+    private void ClearDataFormIns()
     {
-        GameObject.Find("ifModelID").GetComponent<InputField>().text = _model.model_id.ToString();
-        GameObject.Find("if3Dfile").GetComponent<InputField>().text = _model.model_3dfile;
-        GameObject.Find("if2Dfile").GetComponent<InputField>().text = _model.model_2dfile;
+        GameObject.Find("ifInsName").GetComponent<InputField>().text = "";
+        GameObject.Find("ifInsDate").GetComponent<InputField>().text = "";
+        GameObject.Find("ifInsState").GetComponent<InputField>().text = "";
+        GameObject.Find("ifInsEtc").GetComponent<InputField>().text = "";
+        GameObject.Find("ifInsPosition").GetComponent<InputField>().text = "";
     }
 
-    public void ClearDataModel()
+    // 관리자 inputfeild에 _Ins 값 넣기
+    private void UpdateDataForm()
     {
-        GameObject.Find("ifModelID").GetComponent<InputField>().text = "";
-        GameObject.Find("if3Dfile").GetComponent<InputField>().text = "";
-        GameObject.Find("if2Dfile").GetComponent<InputField>().text = "";
+        GameObject.Find("ifAdminName").GetComponent<InputField>().text = _Ins.admin_name;
+        GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = _Ins.admin_etc;
+        GameObject.Find("DdInsState").GetComponent<Dropdown>().value = _Ins.state-1;
+        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = _Ins.ins_image_name;
     }
 
-    public void ClearConsole()
+    // 관리자 inputfeild의 값 삭제
+    public void ClearDataInspection()
     {
-        strToEdit = "";
+        GameObject.Find("ifAdminID").GetComponent<InputField>().text = "";
+        GameObject.Find("ifAdminName").GetComponent<InputField>().text = "";
+        GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = "";
+        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = "";
+        Back();
     }
 
+    // 관리자 inputfeild 적은 값 _Ins에 넣기
     private void UpdateDataInspection()
     {
         UpdateServerIpPort();
 
         try
         {
-            _Ins.ins_id = Convert.ToInt32(GameObject.Find("ifInsadminID").GetComponent<InputField>().text.ToString());
+            _Ins.idx = Convert.ToInt32(GameObject.Find("ifAdminID").GetComponent<InputField>().text.ToString());
         }
         catch (FormatException)
         {
-            _Ins.ins_id = -1;
+            _Ins.idx = -1;
         }
-        _Ins.admin_name = GameObject.Find("ifInsadminname").GetComponent<InputField>().text.ToString();
-        _Ins.admin_etc = GameObject.Find("ifInsadminetc").GetComponent<InputField>().text.ToString();           
+
+        _Ins.admin_name = GameObject.Find("ifAdminName").GetComponent<InputField>().text.ToString();
+        _Ins.admin_etc = GameObject.Find("ifAdminEtc").GetComponent<InputField>().text.ToString();
+
         try
         {
-            _Ins.state = (GameObject.Find("DdInsState").GetComponent<Dropdown>().value)+1;//
+            _Ins.state = (GameObject.Find("DdAdminState").GetComponent<Dropdown>().value)+1;//
         }
         catch (FormatException)
         {
-            _Ins.state = -1;
+            _Ins.state = 0;
         }
 
         if (Application.platform == RuntimePlatform.Android)
         {
-            _Ins.image_name = "/storage/emulated/0/DCIM/" + GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
+            _Ins.ins_image_name = "/storage/emulated/0/DCIM/" + GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
         }
         else
         {
-            _Ins.image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
+            _Ins.ins_image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
         }
-        Debug.Log("Inspection DB : " + _Ins.ins_id.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.image_name);       
+
+        //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
 
-    private void UpdateDataForm()
-    {
-        GameObject.Find("ifInsadminID").GetComponent<InputField>().text = _Ins.ins_id.ToString();
-        GameObject.Find("ifInsadminname").GetComponent<InputField>().text = _Ins.admin_name;
-        GameObject.Find("ifInsadminetc").GetComponent<InputField>().text = _Ins.admin_etc;
-        GameObject.Find("DdInsState").GetComponent<Dropdown>().value = _Ins.state-1;
-        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = _Ins.image_name;
-    }
 
-    public void ClearDataInspection()
-    {
-        GameObject.Find("ifInsadminID").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsadminname").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsadminetc").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsState").GetComponent<InputField>().text = "";
-        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = "";
-    }
 
-  
-
+    // 관리자 insert
     public void OnClick_InsInsert()
     {
-
         UpdateDataInspection();
-
-        Debug.Log("Inspection Insert : " + _Ins.image_name);
-        StartCoroutine(PostFormDataImage("inspection", "adminupdate", _Ins.image_name));
+        StartCoroutine(this.PostFormDataImage("inspection", "adminupdate", _Ins.ins_image_name));
     }
 
-    public void OnClick_InsUpdate()
-    {
-        UpdateDataInspection();
-
-        StartCoroutine(PostFormDataImage("inspection", _Ins.ins_id.ToString(), _Ins.image_name));
-
-    }
-    public void OnClick_InsUpdateData()
-    {
-        UpdateDataInspection();
-
-        StartCoroutine(PostFormData("inspection/data", _Ins.ins_id.ToString()));
-    }
-
-    public void OnClick_InsUpdateImage()
-    {
-        UpdateDataInspection();
-        StartCoroutine(PostFormImage("inspection/image", _Ins.ins_id.ToString(), _Ins.image_name));
-    }
-
+    //점검자 정보 조회 
     public void OnClick_InsSelect()
     {
-        UpdateDataInspection();
-
-        string uri = "inspection/" + _Ins.ins_id.ToString();
-        //form-data(image, key/value) 동시 가져오기
-        StartCoroutine(this.GetMultipartformImage(uri));
+        UpdateServerIpPort();
+        var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
+        StartCoroutine(this.InsPostIdx("inspection/select_idx",json)); 
     }
 
-    public void OnClick_InsDelete()
+    //Start시 Defect DB에 저장된 하자 갯수만큼 소환
+    public void Start_DefectInstantiate()
     {
-        UpdateDataInspection();
-
-        string uri = "inspection/" + _Ins.ins_id.ToString();
-        //form-data(image, key/value) 삭제
-        StartCoroutine(this.Delete(uri)); 
+        UpdateServerIpPort();
+        var json = JsonConvert.SerializeObject(new Inspection(SingletonModelIdx.instance.ModelIdx));
+        StartCoroutine(this.PostDefectIni("inspection/select_modelidx",json)); 
     }
 
-    public void OnClick_ModelInsert()
-    {
-        UpdateDataModel();
-
-        var json = JsonConvert.SerializeObject(_model);
-        StartCoroutine(this.Post("model", "", json)); //추가
-    }
-
-    public void OnClick_ModelSelect()
-    {
-        UpdateDataModel();
-
-        string uri = "model/" + _model.model_id.ToString();
-        StartCoroutine(this.Get(uri));
-    }
-
-    public void OnClick_ModelUpdate()
-    {
-        UpdateDataModel();
-
-        var json = JsonConvert.SerializeObject(_model);
-        StartCoroutine(this.Post("model", _model.model_id.ToString(), json)); //추가
-    }
-
-    public void OnClick_ModelDelete()
-    {
-        UpdateDataModel();
-
-        string uri = "model/" + _model.model_id.ToString();
-        StartCoroutine(this.Delete(uri, "model")); //가져오기 1개만
-    }
-
-    public void OnClick_ModelGetAll()
-    {
-        UpdateDataModel();
-        StartCoroutine(this.GetAll("model")); 
-    }
-
+    //안드로이드 저장소 권한 관련
     IEnumerator CheckPermissionAndroid()
     {
         //SimsLog("CheckPermissionAndroid");
@@ -295,153 +289,45 @@ public class SIMS_Demo : MonoBehaviour
 
         //string fileLocation = "/storage/emulated/0" + "/DCIM/Screenshots/"; // "mnt/sdcard/DCIM/Screenshots/";
     }
-        private void ViewImage(string component_name, byte[] image_bytes)
+
+    //이미지 띄우기?
+    private void ViewImage(string component_name, string PATH)
     {
-        //GameObject imageObj = GameObject.Find("demoImage");
+        byte[] byteTexture = System.IO.File.ReadAllBytes(PATH);
+
+        Texture2D texture = new Texture2D(0, 0);
+
+        texture.LoadImage(byteTexture);
         GameObject imageObj = GameObject.Find(component_name);
 
         Image image = imageObj.GetComponent<Image>();
-        image.type = Image.Type.Simple;
-        image.preserveAspect = true;
 
-        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGB24, false);
-        tex.filterMode = FilterMode.Trilinear;
-        tex.LoadImage(image_bytes);
-        Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.0f), 1.0f);
-        Debug.Log(tex.width + ", " + tex.height);
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
 
-        //sprite.
         image.sprite = sprite;
-    }
-
-    //이미지만 업데이트 함.
-    private IEnumerator PostFormImage(string uri, string id, string path_image)
-    {
-        var url = string.Format("{0}/{1}/{2}", serverPath, uri, id);
-
-        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-        if (_Ins.ins_id > -1)
-        {
-            formData.Add(new MultipartFormDataSection("ins_id", _Ins.ins_id.ToString()));
-        }
-        else
-        {
-           
-            Debug.Log("점검 ID을 입력하시기 바랍니다. 다시 확인바랍니다.!!");
-
-            yield break; ;
-        }
-
-        byte[] img = null;
-        string strImgformat = "";
-        if (Path.GetExtension(path_image) == ".jpg")
-        {
-            img = File.ReadAllBytes(path_image);
-            strImgformat = "image/jpeg";
-        }
-        else if (Path.GetExtension(path_image) == ".png")
-        {
-            img = File.ReadAllBytes(path_image);
-            strImgformat = "image/png";
-        }
-        else
-        {
-            Debug.Log("jpg, png 파일만 전송이 가능합니다. 다시 확인바랍니다.!!");
-            yield break;
-        }
-
-        Debug.Log("파일 경로 : " + path_image);
-
-        formData.Add(new MultipartFormFileSection("file", img, Path.GetFileName(path_image), strImgformat));
-
-        UnityWebRequest www = UnityWebRequest.Post(url, formData);
-        //www.SetRequestHeader("Content-Type", "multipart/form-data");
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "이 업데이트 실패했습니다. " + www.responseCode);
-            Debug.Log(www.error);
-        }
-        else
-        {
-            Debug.Log("점검 ID " + _Ins.ins_id.ToString() + " 이미지가 성공적으로 업데이트가 되었습니다. " + www.responseCode);
-            Debug.Log("Request Response: " + www.downloadHandler.text);
-        }
-    }
-    //Inspection 데이터만 업데이트
-    private IEnumerator PostFormData(string uri, string id)
-    {
-        var url = string.Format("{0}/{1}/{2}", serverPath, uri, id);
-
-        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-        if (_Ins.ins_id > -1)
-        {
-            formData.Add(new MultipartFormDataSection("ins_id", _Ins.ins_id.ToString()));
-        }
-        else
-        {
-            
-            Debug.Log("점검 ID을 입력하시기 바랍니다. 다시 확인바랍니다.!!");
-
-            yield break;;
-        }
-
-        formData.Add(new MultipartFormDataSection("ins_date", _Ins.ins_date != "" ? _Ins.ins_date:"-1"));
-        formData.Add(new MultipartFormDataSection("inspector", _Ins.inspector != "" ? _Ins.inspector : "-1"));
-        formData.Add(new MultipartFormDataSection("damage_type", _Ins.damage_type > -1 ? _Ins.damage_type.ToString() : "-1"));
-        formData.Add(new MultipartFormDataSection("damage_object", _Ins.damage_object != "" ? _Ins.damage_object : "-1"));
-        formData.Add(new MultipartFormDataSection("damage_loc_x", _Ins.damage_loc_x > -1 ? _Ins.damage_loc_x.ToString() : "-1"));
-        formData.Add(new MultipartFormDataSection("damage_loc_y", _Ins.damage_loc_y > -1 ? _Ins.damage_loc_y.ToString() : "-1"));
-        formData.Add(new MultipartFormDataSection("damage_loc_z", _Ins.damage_loc_z > -1 ? _Ins.damage_loc_z.ToString() : "-1"));
-
-        UnityWebRequest www = UnityWebRequest.Post(url, formData);
-        //www.SetRequestHeader("Content-Type", "multipart/form-data");
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "이 업데이트 실패했습니다. " + www.responseCode);
-            Debug.Log(www.error);
-        }
-        else
-        {
-            Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "가 성공적으로 업데이트가 되었습니다. " + www.responseCode);
-            Debug.Log("Request Response: " + www.downloadHandler.text);
-
-            //업로드가 완료되면 폼을 클리어한다.
-            //ClearDataInsepction();
-        }
     }
 
     //이미지와 Inspection 삽입 및 업데이트
     private IEnumerator PostFormDataImage(string uri, string id, string path_image)
     {
-        //SimsLog("PostFormDataImage");
-
         var url = string.Format("{0}/{1}/{2}", serverPath, uri, id);
         Debug.Log(url);
 
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-        if (_Ins.ins_id > -1)
+        if (_Ins.idx > -1)
         {
-            formData.Add(new MultipartFormDataSection("idx", _Ins.ins_id.ToString()));
+            formData.Add(new MultipartFormDataSection("idx", _Ins.idx.ToString()));
         }
         else
         {
-           
             Debug.Log("점검 ID을 입력하시기 바랍니다. 다시 확인바랍니다.!!");
 
             yield break;;
         }
 
-        // formData.Add(new MultipartFormDataSection("ins_date", _Ins.ins_date != "" ? _Ins.ins_date:"-1"));
         formData.Add(new MultipartFormDataSection("admin_name", _Ins.admin_name != "" ? _Ins.admin_name : "-1"));
         formData.Add(new MultipartFormDataSection("admin_etc", _Ins.admin_etc != "" ? _Ins.admin_etc : "-1"));
         formData.Add(new MultipartFormDataSection("state", _Ins.state > -1 ? _Ins.state.ToString() : "-1"));
-        
-  
-        //SimsLog("PostFormDataImage:MultipartFormDataSection");
 
         byte[] img = null;
         string strImgformat = "";
@@ -461,13 +347,7 @@ public class SIMS_Demo : MonoBehaviour
             yield break;
         }
 
-        //SimsLog("PostFormDataImage:MultipartFormFileSection");
-        //SimsLog("파일 경로 : " + path_image);
-        //SimsLog("파일  : " + img.ToString());
-
         formData.Add(new MultipartFormFileSection("file", img, Path.GetFileName(path_image), strImgformat));
-
-        //SimsLog("MultipartFormFileSection");
 
         UnityWebRequest www = UnityWebRequest.Post(url, formData);
         //www.SetRequestHeader("Content-Type", "multipart/form-data");
@@ -476,19 +356,18 @@ public class SIMS_Demo : MonoBehaviour
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "이 전송이 실패했습니다. " + www.responseCode);
+            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 전송이 실패했습니다. " + www.responseCode);
             Debug.Log(www.error);
         }
         else
         {
             if (id == "")
             {
-                //Debug.Log("Form upload complete!");
-                Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "가 성공적으로 Upload(삽입) 되었습니다. " + www.responseCode);
+                Debug.Log("점검 ID " + _Ins.idx.ToString() + "가 성공적으로 Upload(삽입) 되었습니다. " + www.responseCode);
             }
             else
             {
-                Debug.Log("점검 ID " + _Ins.ins_id.ToString() + "가 성공적으로 업데이트가 되었습니다. " + www.responseCode);
+                Debug.Log("점검 ID " + _Ins.idx.ToString() + "가 성공적으로 업데이트가 되었습니다. " + www.responseCode);
             }
 
             Debug.Log("Request Response: " + www.downloadHandler.text);
@@ -498,120 +377,92 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-    #region POST
-    //bodyraw post 전송하는 방법임.
-    private IEnumerator Post(string uri, string id, string data)
+    private IEnumerator InsPostModelIdx(string uri,string data)
     {
-        var url = string.Format("{0}/{1}/{2}", serverPath, uri, id);
-        Debug.Log(url);
-        Debug.Log(data);
-        //POST방식으로 http서버에 요청을 보내겠습니다.
-        var request = new UnityWebRequest(url, "POST");
+        var url = string.Format("{0}/{1}", serverPath, uri);
+
+         var request = new UnityWebRequest(url, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
         //Debug.Log(bodyRaw.Length);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
- 
-        //응답을 기다립니다.
+
+          //응답을 기다립니다.
         yield return request.SendWebRequest();
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("모델 ID " + _model.model_id.ToString() + "이 전송에 실패했습니다. " + request.responseCode);
-            Debug.Log(request.error);
+            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
+           
         }
         else
         {
-
-            //응답을 받았습니다.
-            //Debug.Log(request.downloadHandler.data);
-            Debug.Log(request.downloadHandler.text);
-            _model = (Model)JsonConvert.DeserializeObject<Model>(request.downloadHandler.text);
-            Debug.Log(_model.model_id + "/" + _model.model_3dfile + "/" + _model.model_3dfile);
-
-            if (id == "")
-            {
-                //Debug.Log("Form upload complete!");
-                Debug.Log("모델 ID " + _model.model_id.ToString() + "가 성공적으로 Upload(삽입) 되었습니다. " + request.responseCode);
-            }
-            else
-            {
-                Debug.Log("모델 ID " + _model.model_id.ToString() + "가 성공적으로 업데이트가 되었습니다. " + request.responseCode);
-            }
-
-            Debug.Log("Request Response: " + request.downloadHandler.text);
-
-            //업로드가 완료되면 폼을 클리어한다.
-            ClearDataModel();
-        }
+            byte[] results = request.downloadHandler.data;
  
-    }
-    #endregion
+            //Debug.Log(results.Length);
+ 
+            var message = Encoding.UTF8.GetString(results);
+ 
+            //Debug.Log(message);     //응답했다.!
 
+            InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
+            List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
 
-    #region IMAGE_GET
-    private IEnumerator GetImage(string uri) // 이미지 하나만 받을 경우
-    {
-        string token = "";
-
-        //http서버에 요청 
-        var url = string.Format("{0}/{1}", serverPath, uri);
-        Debug.Log(url);
-
-        using (UnityWebRequest request = UnityWebRequest.Get(url))
-        {
-            //request.SetRequestHeader("Content-Type", "application/json");
-            //request.SetRequestHeader("Content-Type", "multipart/form-data");
-            //request.SetRequestHeader("Authorization", "Bearer " + token);
-
-            string path = Path.Combine(Application.persistentDataPath, "test1.jpg");
-            //request.downloadHandler = new DownloadHandlerFile(path);
-            Debug.Log(path);
-
-            yield return request.SendWebRequest();
-
-            //http서버로부터 응답을 받았다. 
-            if (request.isNetworkError || request.isHttpError)
+            int count =0;
+            foreach (InspectionDto c in list1)
             {
-                Debug.Log(request.error);
+                count++;
+                Debug.Log(count.ToString() + " : " + c.admin_name+ "/" + c.admin_etc + "/" + c.state);
             }
-            else
+        }
+
+    }
+
+    private IEnumerator InsPostIdx(string uri,string data)
+    {
+        var url = string.Format("{0}/{1}", serverPath, uri);
+
+         var request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
+       
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+          //응답을 기다립니다.
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
+           
+        }
+        else
+        {
+            byte[] results = request.downloadHandler.data;
+ 
+            //Debug.Log(results.Length);  //14 
+ 
+            var message = Encoding.UTF8.GetString(results);
+ 
+            Debug.Log(message);     //응답했다.!
+
+            InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
+            List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
+            
+            int count =0;
+            foreach (InspectionDto c in list1)
             {
-                //결과를 문자열로 출력 
-                //Debug.Log(request.downloadHandler.text);
-
-                /* 서버의 이미지를 파일로 저장. 정상적으로 잘 받아지는지 확인을 위한 임시 코드임.
-                try
-                {
-                    byte[] results = request.downloadHandler.data;
-                    File.WriteAllBytes(path, results);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.Log("Error : " + e.Message);
-                }
-                */
-                GameObject imageObj = GameObject.Find("demoImage");
-                Image image = imageObj.GetComponent<Image>();
-                image.type = Image.Type.Simple;
-                image.preserveAspect = true;
-
-                Texture2D tex = new Texture2D(2, 2, TextureFormat.RGB24, false);
-                tex.filterMode = FilterMode.Trilinear;
-                tex.LoadImage(request.downloadHandler.data);
-                Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.0f), 1.0f);
-                Debug.Log(tex.width + ", " + tex.height);
-
-                //sprite.
-                image.sprite = sprite;
+                count++;
+                UpdateDataFormIns(c); 
+                
+                Debug.Log(count.ToString() + " : " + c.idx+ "/" + c.inspector_name + "/" + c.state);
             }
         }
     }
-    #endregion
 
-    #region GETMULTIPARTFORM_IMAGE
-    private IEnumerator GetMultipartformImage(string uri)
+    private IEnumerator GetInsAll(string uri = "")
     {
         //http서버에 요청 
         var url = string.Format("{0}/{1}", serverPath, uri);
@@ -619,9 +470,6 @@ public class SIMS_Demo : MonoBehaviour
 
         using (UnityWebRequest www = UnityWebRequest.Get(url))
         {
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-
             //http서버로 부터 응답을 대기 
             yield return www.SendWebRequest();
 
@@ -629,199 +477,84 @@ public class SIMS_Demo : MonoBehaviour
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
-                Debug.Log("점검 ID가 없거나 존재하지 않은 데이터입니다. 확인하시기 바랍니다.!!");
             }
             else
             {
                 //결과를 문자열로 출력 
                 //Debug.Log(www.downloadHandler.text);
-
                 //바이너리 데이터를 복구 
                 byte[] results = www.downloadHandler.data;
 
-                Debug.Log(results.Length);  //14 
-
+                // Debug.Log(results.Length);  //14 
                 var message = Encoding.UTF8.GetString(results);
-
-                Debug.Log(message);     //응답했다.!
-
-                Inspection ins = (Inspection)JsonConvert.DeserializeObject<Inspection>(message);
-                if (ins != null)
-                {
-                    _Ins = ins;
-                    Debug.Log("점검 ID : " + _Ins.ins_id.ToString() + " 조회 되었습니다.");
-                    UpdateDataForm();
-
-                    //File.WriteAllBytes("d:/sims.jpg", _Ins.image);
-                    ViewImage("imgView", _Ins.image);
-                }
-                else
-                {
-                    Debug.Log("데이터를 가져오지 못했습니다. ID를 확인하세요.");
-                }
-            }
-        }
-    }
-    #endregion
-
-    #region GET
-    private IEnumerator Get(string uri = "")
-    {
-        //http서버에 요청 
-        var url = string.Format("{0}/{1}", serverPath, uri);
-        Debug.Log(url);
- 
-        using (UnityWebRequest www = UnityWebRequest.Get(url))
-        {
-            //http서버로 부터 응답을 대기 
-            yield return www.SendWebRequest();
- 
-            //http서버로부터 응답을 받았다. 
-            if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-                Debug.Log("모델 ID : " + _model.model_id.ToString() + " 조회 실패했습니다.");
-            }
-            else
-            {
-                //결과를 문자열로 출력 
-                Debug.Log(www.downloadHandler.text);
- 
-                //바이너리 데이터를 복구 
-                byte[] results = www.downloadHandler.data;
- 
-                Debug.Log(results.Length);  //14 
- 
-                var message = Encoding.UTF8.GetString(results);
- 
-                Debug.Log(message);     //응답했다.!
-
-                //var result = JsonConvert.DeserializeObject<Model>(message);
-                //Debug.LogFormat("{0}, {1}, {2}", result.CompanyId, result.name, result.address);
-
-                Model model = (Model)JsonConvert.DeserializeObject<Model>(message);
-                if (model != null)
-                {
-                    _model = model;
-                    UpdateDataFormModel();
-                    Debug.Log("모델 ID : " + _model.model_id.ToString() + " 조회 되었습니다.");
-                }
-                else
-                {
-                    Debug.Log("데이터를 가져오지 못했습니다. ID를 확인하세요.");
-                }
-            }
-        }
-    }
-    #endregion
-
-    #region GETALL
-    private IEnumerator GetAll(string uri = "")
-    {
-        //http서버에 요청 
-        var url = string.Format("{0}/{1}", serverPath, uri);
-        Debug.Log(url);
-
-        using (UnityWebRequest www = UnityWebRequest.Get(url))
-        {
-            //http서버로 부터 응답을 대기 
-            yield return www.SendWebRequest();
-
-            //http서버로부터 응답을 받았다. 
-            if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                //결과를 문자열로 출력 
-                Debug.Log(www.downloadHandler.text);
-
-                //바이너리 데이터를 복구 
-                byte[] results = www.downloadHandler.data;
-
-                Debug.Log(results.Length);  //14 
-
-                var message = Encoding.UTF8.GetString(results);
-
-                Debug.Log(message);     //응답했다.!
-
-                /*var result //Inspection 전체 리스트를 알고 싶으면 아래를 풀고 사용하면 됨.
-                List<Inspection> list = JsonConvert.DeserializeObject<List<Inspection>>(message);
-                foreach (Inspection c in list)
-                {
-                    Debug.LogFormat("{0}, {1}, {2}", c.ins_id, c.ins_date, c.inspector);
-                } */
+                // Debug.Log(message);     //응답했다.!
+                InsResponse list = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
+                List<InspectionDto> list1 = new List<InspectionDto>(list.data);
                 int count = 0;
-                List<Model> list = JsonConvert.DeserializeObject<List<Model>>(message);
-                foreach (Model c in list)
+                foreach (InspectionDto c in list1)
                 {
                     count++;
-                    Debug.Log(count.ToString() + " : " + c.model_id.ToString() + "/" + c.model_3dfile + "/" + c.model_2dfile);
+                    Debug.Log(count.ToString() + " : " + c.admin_name+ "/" + c.admin_etc + "/" + c.state);
                 }
             }
         }
     }
-    #endregion
 
-    #region DELETE
-    private IEnumerator Delete(string uri, string type = "ins")
+    private IEnumerator PostDefectIni(string uri, string data )
     {
-        //http서버에 요청 
         var url = string.Format("{0}/{1}", serverPath, uri);
-        Debug.Log(url);
 
-        using (UnityWebRequest www = UnityWebRequest.Delete(url))
+        var request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
+       
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        //응답을 기다립니다.
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            //http서버로 부터 응답을 대기 
-            yield return www.SendWebRequest();
-            //http서버로부터 응답을 받았다. 
-            if (www.isNetworkError || www.isHttpError)
+            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
+        }
+        else
+        {
+            byte[] results = request.downloadHandler.data;
+ 
+            //Debug.Log(results.Length);  //14 
+ 
+            var message = Encoding.UTF8.GetString(results);
+ 
+            //Debug.Log(message);     //응답했다.!
+
+            InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
+            List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
+
+            foreach (InspectionDto c in list1)
             {
-                Debug.Log(www.error);
-                if (type == "ins")
-                    Debug.Log("점검 ID : " + _Ins.ins_id.ToString() + " 삭제가 실패했습니다.");
-                else
-                    Debug.Log("모델 ID : " + _model.model_id.ToString() + " 삭제가 실패했습니다.");
+                DefectPosition = new Vector3(c.damage_loc_x,c.damage_loc_y,c.damage_loc_z);
+                Quaternion a = new Quaternion(0,0,0,0);
+                GameObject Defectpoint= Resources.Load<GameObject>("DefectPrefab/Defect");  
+                GameObject Instance = (GameObject) Instantiate(Defectpoint, DefectPosition,a);
+                Instance.name = c.idx.ToString();
             }
-            else
-            { //성공
-                //결과를 문자열로 출력 
-                //Debug.Log("deleted !!");
-                if (type == "ins")
-                {
-                    Debug.Log("점검 ID : " + _Ins.ins_id.ToString() + " 삭제 되었습니다.");
-                    ClearDataInspection();
-                }
-                else
-                {
-                    Debug.Log("모델 ID : " + _model.model_id.ToString() + " 삭제 되었습니다.");
-                    ClearDataModel();
-                }
-            }
-        } //end using
+        }
     }
-    #endregion
 
     public void OnQuit()
     {
-    #if UNITY_EDITOR
+        #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-    #else
+        #else
             Application.Quit();
-    #endif
+        #endif
     }
-       public void Back()
+
+    public void Back()
     {
-       Transform back = GameObject.Find("Canvas").transform.Find("panel_Inspection");
+       Transform back = GameObject.Find("Canvas").transform.Find("Panel");
         back.gameObject.SetActive(false);
-    }
-    public void UpdateBack()
-    {
-        Transform Updateback = GameObject.Find("Canvas").transform.Find("panel_InspectionUpdate");
-        
-        Updateback.gameObject.SetActive(false);
-        
     }
 
 }
