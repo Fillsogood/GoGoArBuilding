@@ -26,7 +26,7 @@ public class FollowUser : MonoBehaviour
 
     private void LateUpdate()
     {
-		Navigation.position =new Vector3(TargetCapsule.position.x,8.36f,TargetCapsule.position.z);
+		Navigation.position =new Vector3(TargetCapsule.position.x,TargetCapsule.position.y+20f,TargetCapsule.position.z);
 		Navigation.LookAt(TargetCapsule);
     }
 

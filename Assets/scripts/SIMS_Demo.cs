@@ -112,7 +112,7 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://localhost:8080";
-    private string serverPath = "http://192.168.219.181:8080";
+    private string serverPath = "http://182.215.11.80:8080";
 
     private string serverPort = "8080";
 
@@ -134,7 +134,7 @@ public class SIMS_Demo : MonoBehaviour
 
     private void UpdateServerIpPort()
     {
-        string ip = "192.168.219.181";
+        string ip = "182.215.11.80";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -151,44 +151,33 @@ public class SIMS_Demo : MonoBehaviour
     // 점검자 정보 조회 inputfeild
     private void UpdateDataFormIns(InspectionDto ins)
     {
-        GameObject.Find("ifInsName").GetComponent<InputField>().text = ins.inspector_name;
-        GameObject.Find("ifInsDate").GetComponent<InputField>().text = ins.ins_date;
-        switch(ins.state)
+        switch(ins.damage_type)
         {
-            case 1 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 전"; break;
-            case 2 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 중"; break;
-            case 3 : GameObject.Find("ifInsState").GetComponent<InputField>().text = "점검 완료"; break;
+            case 1 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "균열"; break;
+            case 2 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "부식"; break;
+            case 3 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "변형"; break;
         }
-        GameObject.Find("ifInsEtc").GetComponent<InputField>().text = ins.inspector_etc;
-        GameObject.Find("ifInsPosition").GetComponent<InputField>().text = ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
-        GameObject.Find("ifAdminID").GetComponent<InputField>().text = ins.idx.ToString();
+        GameObject.Find("txtInsDate").GetComponent<Text>().text = "날짜 : "+ins.ins_date;
+        GameObject.Find("txtInsName").GetComponent<Text>().text = "점검자 : "+ins.inspector_name;
+        GameObject.Find("txtInsPosition").GetComponent<Text>().text = "하자 위치 : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
+        GameObject.Find("txtInsEtc").GetComponent<Text>().text = "기타사항 : "+ins.inspector_etc;
         GameObject.Find("DdAdminState").GetComponent<Dropdown>().value = ins.state -1;
         ViewImage("imageView", ins.ins_image_url);
     }
 
     // 점검자 정보 조회 inputfeild Clear
-    private void ClearDataFormIns()
-    {
-        GameObject.Find("ifInsName").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsDate").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsState").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsEtc").GetComponent<InputField>().text = "";
-        GameObject.Find("ifInsPosition").GetComponent<InputField>().text = "";
-    }
-
-    // 관리자 inputfeild에 _Ins 값 넣기
-    private void UpdateDataForm()
-    {
-        GameObject.Find("ifAdminName").GetComponent<InputField>().text = _Ins.admin_name;
-        GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = _Ins.admin_etc;
-        GameObject.Find("DdInsState").GetComponent<Dropdown>().value = _Ins.state-1;
-        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = _Ins.ins_image_name;
-    }
+    // private void ClearDataFormIns()
+    // {
+    //     GameObject.Find("ifInsDate").GetComponent<InputField>().text = "";
+    //     GameObject.Find("ifInsName").GetComponent<InputField>().text = ""; 
+    //     GameObject.Find("ifInsState").GetComponent<InputField>().text = "";
+    //     GameObject.Find("ifInsEtc").GetComponent<InputField>().text = "";
+    //     GameObject.Find("ifInsPosition").GetComponent<InputField>().text = "";
+    // }
 
     // 관리자 inputfeild의 값 삭제
     public void ClearDataInspection()
-    {
-        GameObject.Find("ifAdminID").GetComponent<InputField>().text = "";
+    {  
         GameObject.Find("ifAdminName").GetComponent<InputField>().text = "";
         GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = "";
         GameObject.Find("ifPicturePath").GetComponent<InputField>().text = "";
@@ -202,7 +191,7 @@ public class SIMS_Demo : MonoBehaviour
 
         try
         {
-            _Ins.idx = Convert.ToInt32(GameObject.Find("ifAdminID").GetComponent<InputField>().text.ToString());
+            _Ins.idx = DefectIdx;
         }
         catch (FormatException)
         {
@@ -220,15 +209,8 @@ public class SIMS_Demo : MonoBehaviour
         {
             _Ins.state = 0;
         }
-
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            _Ins.ins_image_name = "/storage/emulated/0/DCIM/" + GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
-        }
-        else
-        {
+            
             _Ins.ins_image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
-        }
 
         //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
