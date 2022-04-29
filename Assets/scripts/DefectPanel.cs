@@ -24,11 +24,11 @@ public class DefectPanel : MonoBehaviour
         }   
     }
 
-    public void DefectBtn()
+    public void OpenSelectPanel()
     {
         GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
         Defectpanel.SetActive(false);
-        GameObject Panal= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
+        GameObject Panal= GameObject.Find("Canvas").transform.Find("PanelSelect").gameObject;
         Panal.SetActive(true);
        /*
         Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
@@ -66,5 +66,12 @@ public class DefectPanel : MonoBehaviour
         GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
         DefectImg.SetActive(false);
         */      
+   }
+   public void OpenPanel()
+   {
+        GameObject Panal= GameObject.Find("Canvas").transform.Find("PanelSelect").gameObject;
+        Panal.SetActive(false);
+        GameObject selectpanel= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
+        selectpanel.SetActive(true);
    }
 }

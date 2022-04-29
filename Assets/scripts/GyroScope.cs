@@ -8,7 +8,7 @@ public class GyroScope : MonoBehaviour
     Rigidbody rb;
     Text x;
     Text y;
-    float speed=0.05f; 
+    float speed=0.15f;
     bool isBorder;
     bool Istri;
     Transform xText;
@@ -70,7 +70,7 @@ public class GyroScope : MonoBehaviour
 
     void gyroupdate()
 	{
-        m_PlayerRot.y -= Input.gyro.rotationRate.z*1.0f;
+        m_PlayerRot.y -= Input.gyro.rotationRate.z*0.9f;
 		Capsule.transform.eulerAngles = m_PlayerRot;
 	}
 

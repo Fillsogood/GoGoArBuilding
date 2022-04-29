@@ -118,13 +118,16 @@ public class SIMS_Demo : MonoBehaviour
 
     public int DefectIdx{get;set;}
 
-    Vector3 DefectPosition;
+    private Vector3 DefectPosition;
 
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
+    private bool ischeck =true;
+    
 
     void Start()
     {
+        SimsLog("헿");
         if (Application.platform == RuntimePlatform.Android)
         { 
             StartCoroutine("CheckPermissionAndroid");
@@ -134,6 +137,7 @@ public class SIMS_Demo : MonoBehaviour
 
     private void UpdateServerIpPort()
     {
+        //string ip = "localhost";
         string ip = "182.215.11.80";
         string port = "8080";
 
@@ -146,6 +150,12 @@ public class SIMS_Demo : MonoBehaviour
             serverPath = "http://" + ip + ":" + port;
             Debug.Log(serverPath);
         }
+    }
+
+    private void SimsLog(string text)
+    {
+       GameObject.Find("Text_console").GetComponent<Text>().text += text + "\n";
+       // strToEdit=;
     }
 
     // 점검자 정보 조회 inputfeild
@@ -161,8 +171,15 @@ public class SIMS_Demo : MonoBehaviour
         GameObject.Find("txtInsName").GetComponent<Text>().text = "점검자 : "+ins.inspector_name;
         GameObject.Find("txtInsPosition").GetComponent<Text>().text = "하자 위치 : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
         GameObject.Find("txtInsEtc").GetComponent<Text>().text = "기타사항 : "+ins.inspector_etc;
+        
+        SimsLog(ins.ins_image_url);
+        //ViewImageAndroid("imageView",ins.ins_bytes);
+        //ViewImage("imageView", ins.ins_image_name);
+    }
+
+    private void UpdateDataFormAdmin(InspectionDto ins)
+    {
         GameObject.Find("DdAdminState").GetComponent<Dropdown>().value = ins.state -1;
-        ViewImage("imageView", ins.ins_image_url);
     }
 
     // 점검자 정보 조회 inputfeild Clear
@@ -180,7 +197,8 @@ public class SIMS_Demo : MonoBehaviour
     {  
         GameObject.Find("ifAdminName").GetComponent<InputField>().text = "";
         GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = "";
-        GameObject.Find("ifPicturePath").GetComponent<InputField>().text = "";
+        Debug.Log(DefectPosition.x.ToString() + " / " + DefectPosition.y.ToString() + " / "+  DefectPosition.z.ToString());
+        GameObject.Find("Capsules(Clone)").transform.Find("Capsule").transform.position=DefectPosition;
         Back();
     }
 
@@ -210,7 +228,8 @@ public class SIMS_Demo : MonoBehaviour
             _Ins.state = 0;
         }
             
-            _Ins.ins_image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
+            //_Ins.ins_image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
+            _Ins.ins_image_name = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtPicturepath").GetComponent<Text>().text.ToString();
 
         //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
@@ -229,9 +248,21 @@ public class SIMS_Demo : MonoBehaviour
     {
         UpdateServerIpPort();
         var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
+        ischeck=true;
         StartCoroutine(this.InsPostIdx("inspection/select_idx",json)); 
     }
-
+    public void OnClick_InsGetAll()
+    {
+        UpdateServerIpPort();
+        StartCoroutine(this.GetInsAll("inspection/selectall")); 
+    }
+    public void OnClick_AdminSelect()
+    {
+        UpdateServerIpPort();
+        var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
+        ischeck=false;
+        StartCoroutine(this.InsPostIdx("inspection/select_idx",json));    
+    }
     //Start시 Defect DB에 저장된 하자 갯수만큼 소환
     public void Start_DefectInstantiate()
     {
@@ -275,17 +306,38 @@ public class SIMS_Demo : MonoBehaviour
     //이미지 띄우기?
     private void ViewImage(string component_name, string PATH)
     {
+        SimsLog(PATH);
         byte[] byteTexture = System.IO.File.ReadAllBytes(PATH);
 
         Texture2D texture = new Texture2D(0, 0);
 
         texture.LoadImage(byteTexture);
+        GameObject imageObj = GameObject.Find("Canvas").transform.Find("PanelSelect").transform.Find(component_name).gameObject;
+
+        Image image = imageObj.GetComponent<Image>();
+        
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
+
+        image.sprite = sprite;
+    }
+        private void ViewImageAndroid(string component_name, byte[] image_bytes)
+    {
         GameObject imageObj = GameObject.Find(component_name);
 
         Image image = imageObj.GetComponent<Image>();
+        image.type = Image.Type.Simple;
+        image.preserveAspect = true;
 
-        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
+        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        tex.filterMode = FilterMode.Trilinear;
+        tex.LoadImage(image_bytes); 
+        tex.filterMode = FilterMode.Trilinear;
+        
+        Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.0f), 1.0f);
+        Debug.Log(tex.width + ", " + tex.height);
+        
 
+        //sprite.
         image.sprite = sprite;
     }
 
@@ -410,6 +462,7 @@ public class SIMS_Demo : MonoBehaviour
        
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
+        
         request.SetRequestHeader("Content-Type", "application/json");
 
           //응답을 기다립니다.
@@ -437,7 +490,19 @@ public class SIMS_Demo : MonoBehaviour
             foreach (InspectionDto c in list1)
             {
                 count++;
-                UpdateDataFormIns(c); 
+                if(ischeck==true)
+                {
+                    //SimsLog(c.ins_image_url);
+                    //UpdateDataFormIns(c); 
+                    //UnityWebRequestTexture.GetTexture("https://www.my-server.com/" + c.ins_image_name);
+                }
+                else
+                {
+                    UpdateDataFormAdmin(c);
+                }
+                
+                DefectPosition = new Vector3(c.damage_loc_x, c.damage_loc_y, c.damage_loc_z);
+                Debug.Log(DefectPosition.x.ToString() + " / " + DefectPosition.y.ToString() + " / "+  DefectPosition.z.ToString());
                 
                 Debug.Log(count.ToString() + " : " + c.idx+ "/" + c.inspector_name + "/" + c.state);
             }
@@ -476,10 +541,34 @@ public class SIMS_Demo : MonoBehaviour
                 foreach (InspectionDto c in list1)
                 {
                     count++;
+                    Debug.Log("DefectIDX " + DefectIdx);
+                    Debug.Log("c.IDX " + c.idx);
+                    if(DefectIdx == c.idx)
+                    {
+                        ViewImageAndroid("imageView",c.ins_bytes);
+                        
+                    }
+                        
                     Debug.Log(count.ToString() + " : " + c.admin_name+ "/" + c.admin_etc + "/" + c.state);
                 }
+                
             }
         }
+    }
+
+    private void Set_Image(byte[] recevByteArr)
+    {
+            Texture2D bmp;
+            bmp = new Texture2D(8, 8);
+            //bmp.LoadRawTextureData(recevBuffer);
+            bmp.LoadImage(recevByteArr, false);
+
+            Vector2 pivot = new Vector2(0.5f, 0.5f);
+            Rect tRect = new Rect(0, 0, bmp.width, bmp.height);
+            Sprite newSprite = Sprite.Create(bmp, tRect, pivot);
+
+            GameObject Image = GameObject.Find("Canvas").transform.Find("PanelSelect").transform.Find("imageView").gameObject;
+            Image.GetComponent<Image>().overrideSprite = newSprite;
     }
 
     private IEnumerator PostDefectIni(string uri, string data )

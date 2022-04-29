@@ -8,7 +8,7 @@ public class QRDecodeTest : MonoBehaviour
 {
 	public QRCodeDecodeController e_qrController;
 
-	public Text UiText;
+	//public Text UiText;
 
 	public GameObject resetBtn;
 
@@ -48,7 +48,7 @@ public class QRDecodeTest : MonoBehaviour
 				GotoNextScene("Test");
 			}
 		}
-		this.UiText.text = dataText;
+		//this.UiText.text = dataText;
 		if (this.resetBtn != null)
 		{
 			this.resetBtn.SetActive(true);
@@ -67,10 +67,10 @@ public class QRDecodeTest : MonoBehaviour
 			this.e_qrController.Reset();
 		}
 
-		if (this.UiText != null)
-		{
-			this.UiText.text = string.Empty;
-		}
+		// if (this.UiText != null)
+		// {
+		// 	this.UiText.text = string.Empty;
+		// }
 		if (this.resetBtn != null)
 		{
 			this.resetBtn.SetActive(false);

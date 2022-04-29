@@ -45,7 +45,7 @@ public class DeviceCameraController : MonoBehaviour {
         }
         webcam = new DeviceCamera (isUseEasyWebCam);
         EasyWebCam.OnEasyWebCamStart += PreviewStart;
-        StartWork();
+        //StartWork();
     }
     
     void PreviewStart()

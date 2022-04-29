@@ -23,7 +23,8 @@ public class TakePicture : MonoBehaviour
                     Debug.Log("Couldn't load texture from"+path);
                     return;
                 }
-               GameObject.Find("Canvas").transform.Find("panel_Inspection").transform.Find("ifPicturePath").GetComponent<InputField>().text = path;
+              // GameObject.Find("Canvas").transform.Find("panel_Inspection").transform.Find("ifPicturePath").GetComponent<InputField>().text = path;
+              GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtPicturepath").GetComponent<Text>().text = path;
             }
         }, maxSize);
         Debug.Log("Permission result:"+permission);
