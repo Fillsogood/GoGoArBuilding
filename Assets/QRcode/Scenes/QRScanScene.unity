@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   e_qrController: {fileID: 841200353}
-  UiText: {fileID: 0}
   resetBtn: {fileID: 1863062879}
   scanLineObj: {fileID: 694556625}
   torchImage: {fileID: 0}
@@ -807,14 +806,14 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1257964406}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 153917683}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Play
+        m_TargetAssemblyTypeName: QRDecodeTest, Assembly-CSharp
+        m_MethodName: GotoNextScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

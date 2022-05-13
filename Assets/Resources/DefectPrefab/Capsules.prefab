@@ -212,7 +212,7 @@ GameObject:
   - component: {fileID: 1637109313391971619}
   - component: {fileID: 5130109292516090907}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Point_of_view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,13 +225,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8655289977424925945}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.3647995, y: 0.3729, z: 0}
-  m_LocalScale: {x: 0.7865675, y: 0.30610585, z: 0.6774158}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.67, y: 0.3729, z: 0}
+  m_LocalScale: {x: 1.6, y: 0, z: 1.6}
   m_Children: []
   m_Father: {fileID: 2111340253601951766}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &3732327480241659917
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -259,7 +259,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d5633beb414407d448b435033c411758, type: 2}
+  - {fileID: 2100000, guid: 53e9554db3829134b8d2f34b5baff645, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

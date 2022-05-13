@@ -4,12 +4,30 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //script to make secondary camera follow user.
-public class FollowUser : MonoBehaviour
+public class CameraCtr : MonoBehaviour
 {  
     GameObject Target; // Capsule 게임오브젝트 가져오기
     public Transform TargetCapsule;
     public Transform Navigation;
+    public Scrollbar scrollbar;
     
+    void Start()
+    {
+        scrollbar.onValueChanged.AddListener((float val)=>ScrollbarCallback(val));
+
+    }
+    void ScrollbarCallback(float value)
+    {
+        Camera navigation = GameObject.Find("NavigationCamera").GetComponent<Camera>();
+        if(value>=0&&value<=0.02)
+        {
+           navigation.orthographicSize=3.318265f;
+        }
+        else
+        {
+            navigation.orthographicSize=value*150f;
+        }
+    }
     void Update()
     {
         if(TargetCapsule==null)
