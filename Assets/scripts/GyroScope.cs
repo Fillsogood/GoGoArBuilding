@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class GyroScope : MonoBehaviour
 {
     GameObject Capsule;
@@ -29,17 +30,23 @@ public class GyroScope : MonoBehaviour
 
     protected void Update()
     {   
-        Vector3 pos;
-        pos = this.gameObject.transform.position;
-        x.text=" X:"+pos.x;
-        y.text="Y:"+pos.z;
-        gyroupdate();    
+        if(SceneManager.GetActiveScene().name == "Test")
+        {
+            Vector3 pos;
+            pos = this.gameObject.transform.position;
+            x.text=" X:"+pos.x;
+            y.text="Y:"+pos.z;
+            gyroupdate(); 
+        }
+        
+        
     }
 
     void FixedUpdate()
     {
+        
         AddRigidbody();
-
+        
         if(average()>=0.0612304173409939 && average()<=0.09&&!isBorder)
         {
             //이동

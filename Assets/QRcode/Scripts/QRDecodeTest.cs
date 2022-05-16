@@ -22,11 +22,18 @@ public class QRDecodeTest : MonoBehaviour
 
 	private void Start()
 	{
-		GameObject.Find("startButton").GetComponent<Button>().interactable = false;
+		
 	}
 
 	private void Update()
 	{
+		if(SceneManager.GetActiveScene().name == "Test")
+		{
+			Play();
+			Debug.Log("dasd");
+			Debug.Log(GameObject.Find("startButton"));
+			GameObject.Find("startButton").GetComponent<Button>().interactable = false;
+		}
 	}
 
 	public void qrScanFinished(string dataText)
@@ -116,7 +123,8 @@ public class QRDecodeTest : MonoBehaviour
 		// 	this.e_qrController.StopWork();
 		// }
 		// //Application.LoadLevel(scenename);
-		SceneManager.LoadScene("Test");
+		SceneManager.LoadScene("Test",LoadSceneMode.Additive);
+		Stop();
 	}
     
 
