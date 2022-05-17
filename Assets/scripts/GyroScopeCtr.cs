@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public class GyroScope : MonoBehaviour
+public class GyroScopeCtr : MonoBehaviour
 {
     GameObject Capsule;
     Rigidbody rb;
@@ -15,6 +15,8 @@ public class GyroScope : MonoBehaviour
     Transform xText;
     Transform yText;
     Vector3 m_PlayerRot;
+
+    static double GyroRotY;
 
     void Start()
     {
@@ -77,9 +79,16 @@ public class GyroScope : MonoBehaviour
 
     void gyroupdate()
 	{
-        m_PlayerRot.y -= Input.gyro.rotationRate.z*0.9f;
+        m_PlayerRot.y -= Input.gyro.rotationRate.z*1.3f;
 		Capsule.transform.eulerAngles = m_PlayerRot;
+        GyroRotY = m_PlayerRot.y;
 	}
+
+    public static string GetGyroData()
+    {
+        return GyroRotY.ToString();
+    }
+
 
     double average()
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class DefectPanel : MonoBehaviour
 {
@@ -73,5 +74,7 @@ public class DefectPanel : MonoBehaviour
         Panal.SetActive(false);
         GameObject selectpanel= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
         selectpanel.SetActive(true);
+
+        GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtGyrovalue").GetComponent<Text>().text = GyroScopeCtr.GetGyroData();
    }
 }

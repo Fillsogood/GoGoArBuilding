@@ -19,6 +19,7 @@ public class QRDecodeTest : MonoBehaviour
 	/// when you set the var is true,if the result of the decode is web url,it will open with browser.
 	/// </summary>
 	public bool isOpenBrowserIfUrl;
+	private bool isPlaying;
 
 	private void Start()
 	{
@@ -27,9 +28,14 @@ public class QRDecodeTest : MonoBehaviour
 
 	private void Update()
 	{
+		Debug.Log(isPlaying);
 		if(SceneManager.GetActiveScene().name == "Test")
 		{
-			Play();
+			if(isPlaying != true)
+			{
+				Play();
+			}
+			
 			Debug.Log("dasd");
 			Debug.Log(GameObject.Find("startButton"));
 			GameObject.Find("startButton").GetComponent<Button>().interactable = false;
@@ -95,12 +101,14 @@ public class QRDecodeTest : MonoBehaviour
 		Reset ();
 		if (this.e_qrController != null)
 		{
+			isPlaying = true;
 			this.e_qrController.StartWork();
 		}
 	}
 
 	public void Stop()
 	{
+		isPlaying = false;
 		if (this.e_qrController != null)
 		{
 			this.e_qrController.StopWork();

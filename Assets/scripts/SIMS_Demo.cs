@@ -114,8 +114,8 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    //private string serverPath = "http://182.215.11.80:8080";
-    private string serverPath = "http://localhost:8080";
+    private string serverPath = "http://14.5.62.2:8080";
+    //private string serverPath = "http://localhost:8080";
 
 
     private string serverPort = "8080";
@@ -141,8 +141,8 @@ public class SIMS_Demo : MonoBehaviour
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        //string ip = "182.215.11.80";
-        string ip = "localhost";
+        string ip = "14.5.62.2";
+        //string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
