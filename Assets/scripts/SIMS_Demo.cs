@@ -114,8 +114,8 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    private string serverPath = "http://14.5.62.2:8080";
-    //private string serverPath = "http://localhost:8080";
+    //private string serverPath = "http://14.5.62.2:8080";
+    private string serverPath = "http://localhost:8080";
 
 
     private string serverPort = "8080";
@@ -141,8 +141,8 @@ public class SIMS_Demo : MonoBehaviour
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        string ip = "14.5.62.2";
-        //string ip = "localhost";
+        //string ip = "14.5.62.2";
+        string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -238,11 +238,19 @@ public class SIMS_Demo : MonoBehaviour
         ischeck=true;
         StartCoroutine(this.InsPostIdx("inspection/select_idx",json)); 
     }
-    public void OnClick_InsGetAll()
+    
+    public void OnClick_InsGetImage()
     {
         UpdateServerIpPort();
         GetImage();
         //StartCoroutine(this.GetInsAll("inspection/selectall")); 
+    }
+
+    public void OnClick_InsSelectList()
+    {
+        UpdateServerIpPort();
+        // var json = JsonConvert.SerializeObject(new Inspection(SingletonModelIdx.instance.ModelIdx));
+        InsModelIdx("inspection/select_modelidx"); 
     }
 
 
@@ -454,19 +462,121 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-    private void GetImage()
+
+    private void InsModelIdx(string uri)
     {
-        string url = serverPath+"/inspection/select_idx"; 
+        var url = string.Format("{0}/{1}", serverPath, uri);
         string responseText = string.Empty;
+
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = "POST";
         request.Timeout = 30 * 10000; // 30초
         request.ContentType = "application/json; charset=utf-8";
-        string postData ="{\"idx\" : "+DefectIdx+"}";
+
+        string postData ="{\"idx\" : "+SingletonModelIdx.instance.ModelIdx+"}";
         byte[] byteArray =Encoding.UTF8.GetBytes(postData);
+
         Stream dataStream = request.GetRequestStream();
         dataStream.Write(byteArray, 0, byteArray.Length);
         dataStream.Close();
+
+        using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
+        {
+            HttpStatusCode status = resp.StatusCode;
+            if (status != HttpStatusCode.OK)
+            {
+                Debug.Log("모델 ID " + SingletonModelIdx.instance.ModelIdx + "이 조회에 실패했습니다. " + status);
+           
+            }
+            Stream respStream = resp.GetResponseStream();
+            using (StreamReader sr = new StreamReader(respStream))
+            {
+                responseText = sr.ReadToEnd();
+            }
+        }
+
+        var jObject = JObject.Parse(responseText);
+        string data =jObject.GetValue("data").ToString();
+               
+        InsResponse jObjText = (InsResponse) JsonConvert.DeserializeObject<InsResponse>(jObject.ToString());
+        List<InspectionDto> list = new List<InspectionDto>(jObjText.data);
+
+        GameObject Item = Resources.Load<GameObject>("Item_Panel");
+        int yValue = 0;
+
+        for(int i=0; i<list.Count; i++)
+        {
+            var index = Instantiate(Item, new Vector3(0, yValue, 0), Quaternion.identity);
+            index.name = "item"+i;
+            index.transform.SetParent(GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content"));
+            yValue -= 200;
+        }
+
+        int count = 0;
+
+        foreach(InspectionDto j in list)
+        {
+            //이미지 넣기
+            byte[] newBytes22 = j.ins_bytes;
+
+            MemoryStream ms = new MemoryStream(newBytes22);
+            newBytes22 = ms.ToArray();
+
+            Texture2D texture = new Texture2D(0, 0);
+            texture.LoadImage(newBytes22);
+            
+            GameObject imageObj = GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("Item_Image").gameObject;
+            Image image = imageObj.GetComponent<Image>();
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
+            image.sprite = sprite; 
+
+            //하자 리스트 정보값 출력
+            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
+
+            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
+
+            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
+
+            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
+
+            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
+                                        .transform.Find("Viewport").transform.Find("Content")
+                                        .transform.Find("item"+count).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
+
+            count++;
+        }
+    }
+
+    
+
+    private void GetImage()
+    {
+        string url = serverPath+"/inspection/select_idx"; 
+        string responseText = string.Empty;
+
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+        request.Method = "POST";
+        request.Timeout = 30 * 10000; // 30초
+        request.ContentType = "application/json; charset=utf-8";
+
+        string postData ="{\"idx\" : "+DefectIdx+"}";
+        byte[] byteArray =Encoding.UTF8.GetBytes(postData);
+
+        Stream dataStream = request.GetRequestStream();
+        dataStream.Write(byteArray, 0, byteArray.Length);
+        dataStream.Close();
+
         using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
         {
             HttpStatusCode status = resp.StatusCode;
@@ -477,15 +587,20 @@ public class SIMS_Demo : MonoBehaviour
                 responseText = sr.ReadToEnd();
             }
         }
+
         var jObject = JObject.Parse(responseText);
         string data = jObject.GetValue("data")[0].ToString();
         var jObject2 = JObject.Parse(data);
+
         Inspection m = JsonConvert.DeserializeObject<Inspection>(data); 
         byte[] newBytes22 = m.ins_bytes;
+
         MemoryStream ms = new MemoryStream(newBytes22);
         newBytes22 = ms.ToArray();
+
         Texture2D texture = new Texture2D(0, 0);
         texture.LoadImage(newBytes22);
+
         GameObject imageObj = GameObject.Find("Canvas").transform.Find("PanelSelect").transform.Find("imageView").gameObject;
         Image image = imageObj.GetComponent<Image>();
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);

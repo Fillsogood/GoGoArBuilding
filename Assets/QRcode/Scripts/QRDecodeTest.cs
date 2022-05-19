@@ -19,27 +19,15 @@ public class QRDecodeTest : MonoBehaviour
 	/// when you set the var is true,if the result of the decode is web url,it will open with browser.
 	/// </summary>
 	public bool isOpenBrowserIfUrl;
-	private bool isPlaying;
 
 	private void Start()
 	{
 		
+		GameObject.Find("startButton").GetComponent<Button>().interactable = false;
 	}
 
 	private void Update()
 	{
-		Debug.Log(isPlaying);
-		if(SceneManager.GetActiveScene().name == "Test")
-		{
-			if(isPlaying != true)
-			{
-				Play();
-			}
-			
-			Debug.Log("dasd");
-			Debug.Log(GameObject.Find("startButton"));
-			GameObject.Find("startButton").GetComponent<Button>().interactable = false;
-		}
 	}
 
 	public void qrScanFinished(string dataText)
@@ -52,7 +40,7 @@ public class QRDecodeTest : MonoBehaviour
 				if (!dataText.Contains("http://") && !dataText.Contains("https://"))
 				{
 					//dataText = "http://" + dataText;
-					
+
 					var msg = dataText.Split('/');
 					dataText= msg[2];
 				}
@@ -101,14 +89,12 @@ public class QRDecodeTest : MonoBehaviour
 		Reset ();
 		if (this.e_qrController != null)
 		{
-			isPlaying = true;
 			this.e_qrController.StartWork();
 		}
 	}
 
 	public void Stop()
 	{
-		isPlaying = false;
 		if (this.e_qrController != null)
 		{
 			this.e_qrController.StopWork();
@@ -126,13 +112,13 @@ public class QRDecodeTest : MonoBehaviour
 
 	public void GotoNextScene()
 	{
+
 		// if (this.e_qrController != null)
 		// {
 		// 	this.e_qrController.StopWork();
 		// }
-		// //Application.LoadLevel(scenename);
-		SceneManager.LoadScene("Test",LoadSceneMode.Additive);
-		Stop();
+		//Application.LoadLevel(scenename);
+		SceneManager.LoadScene("Test");
 	}
     
 

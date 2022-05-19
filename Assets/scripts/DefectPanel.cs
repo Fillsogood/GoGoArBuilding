@@ -10,7 +10,7 @@ public class DefectPanel : MonoBehaviour
   
     void Start()
     {
-        _Sims = GameObject.Find("TargetManager").GetComponent<SIMS_Demo>();
+        _Sims = GameObject.Find("Manager").GetComponent<SIMS_Demo>();
     }
 
    public void OnTriggerEnter (Collider other)
