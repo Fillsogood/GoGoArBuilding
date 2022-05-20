@@ -127,6 +127,7 @@ public class SIMS_Demo : MonoBehaviour
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
     private bool ischeck =true;
+    private int listCount;
     
 
     void Start()
@@ -248,6 +249,7 @@ public class SIMS_Demo : MonoBehaviour
 
     public void OnClick_InsSelectList()
     {
+        On_List();
         UpdateServerIpPort();
         // var json = JsonConvert.SerializeObject(new Inspection(SingletonModelIdx.instance.ModelIdx));
         InsModelIdx("inspection/select_modelidx"); 
@@ -463,7 +465,7 @@ public class SIMS_Demo : MonoBehaviour
     }
 
 
-    private void InsModelIdx(string uri)
+     private void InsModelIdx(string uri)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
         string responseText = string.Empty;
@@ -508,11 +510,11 @@ public class SIMS_Demo : MonoBehaviour
         {
             var index = Instantiate(Item, new Vector3(0, yValue, 0), Quaternion.identity);
             index.name = "item"+i;
-            index.transform.SetParent(GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content"));
+            index.transform.SetParent(GameObject.Find("Content").transform);
             yValue -= 200;
         }
 
+        listCount = list.Count;
         int count = 0;
 
         foreach(InspectionDto j in list)
@@ -526,33 +528,21 @@ public class SIMS_Demo : MonoBehaviour
             Texture2D texture = new Texture2D(0, 0);
             texture.LoadImage(newBytes22);
             
-            GameObject imageObj = GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("Item_Image").gameObject;
+            GameObject imageObj = GameObject.Find("item"+count).transform.Find("Item_Image").gameObject;
             Image image = imageObj.GetComponent<Image>();
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
             image.sprite = sprite; 
 
             //하자 리스트 정보값 출력
-            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
+            GameObject.Find("item"+count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
 
-            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
+            GameObject.Find("item"+count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
 
-            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
+            GameObject.Find("item"+count).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
 
-            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
+            GameObject.Find("item"+count).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
 
-            GameObject.Find("Canvas").transform.Find("List_Panel").transform.Find("Scroll View")
-                                        .transform.Find("Viewport").transform.Find("Content")
-                                        .transform.Find("item"+count).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
+            GameObject.Find("item"+count).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
 
             count++;
         }
@@ -662,6 +652,33 @@ public class SIMS_Demo : MonoBehaviour
     {
        Transform back = GameObject.Find("Canvas").transform.Find("Panel");
         back.gameObject.SetActive(false);
+    }
+
+    private void On_List()
+    {
+        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
+        On_Panel.gameObject.SetActive(true);
+        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
+        On_btn.gameObject.SetActive(false);
+        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
+        Off_btn.gameObject.SetActive(true);
+
+    }
+
+    public void Off_List()
+    {
+        int count = 0;
+        for(int i=0; i<listCount; i++)
+        {
+            Destroy(GameObject.Find("item"+count));
+            count++;
+        }
+        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
+        On_Panel.gameObject.SetActive(false);
+        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
+        On_btn.gameObject.SetActive(true);
+        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
+        Off_btn.gameObject.SetActive(false);
     }
 
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.XR.ARCore;
+//using UnityEngine.XR.ARCore;
 public class Control : MonoBehaviour
 {
     
@@ -30,23 +30,6 @@ public class Control : MonoBehaviour
         Debug.Log(Off);
         Off.gameObject.SetActive(false);
     }
-    public void On_List()
-    {
-        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
-        On_Panel.gameObject.SetActive(true);
-        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
-        On_btn.gameObject.SetActive(false);
-        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
-        Off_btn.gameObject.SetActive(true);
 
-    }
-    public void Off_List()
-    {
-        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
-        On_Panel.gameObject.SetActive(false);
-        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
-        On_btn.gameObject.SetActive(true);
-        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
-        Off_btn.gameObject.SetActive(false);
-    }
+    
 }
