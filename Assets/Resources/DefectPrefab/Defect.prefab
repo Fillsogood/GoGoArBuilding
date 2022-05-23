@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 1220818699302274275}
   - component: {fileID: 8345789459717153146}
   - component: {fileID: 662980249159712009}
+  - component: {fileID: 2911367705317301137}
   m_Layer: 0
   m_Name: Defect
   m_TagString: Love
@@ -168,6 +169,19 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2911367705317301137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220818699302274274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb898793194e03f4bb10dba03ec2cb70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DestroyOnRemoval: 1
 --- !u!1 &7228349032665906980
 GameObject:
   m_ObjectHideFlags: 0

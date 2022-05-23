@@ -114,8 +114,8 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    //private string serverPath = "http://14.5.62.2:8080";
-    private string serverPath = "http://localhost:8080";
+    private string serverPath = "http://112.157.106.246:8080";
+    //private string serverPath = "http://localhost:8080";
 
 
     private string serverPort = "8080";
@@ -127,7 +127,8 @@ public class SIMS_Demo : MonoBehaviour
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
     private bool ischeck =true;
-    private int listCount;
+    private int listCount = 0;
+    private List<int> defectIdxList = new List<int>();
     
 
     void Start()
@@ -138,12 +139,12 @@ public class SIMS_Demo : MonoBehaviour
         }
         Start_DefectInstantiate();
     }
-
+    
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        //string ip = "14.5.62.2";
-        string ip = "localhost";
+        string ip = "112.157.106.246";
+        //string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -249,12 +250,11 @@ public class SIMS_Demo : MonoBehaviour
 
     public void OnClick_InsSelectList()
     {
-        On_List();
         UpdateServerIpPort();
+        On_List();
         // var json = JsonConvert.SerializeObject(new Inspection(SingletonModelIdx.instance.ModelIdx));
         InsModelIdx("inspection/select_modelidx"); 
     }
-
 
     public void OnClick_AdminSelect()
     {
@@ -263,6 +263,7 @@ public class SIMS_Demo : MonoBehaviour
         ischeck=false;
         StartCoroutine(this.InsPostIdx("inspection/select_idx",json));    
     }
+
     //Start시 Defect DB에 저장된 하자 갯수만큼 소환
     public void Start_DefectInstantiate()
     {
@@ -464,7 +465,6 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-
      private void InsModelIdx(string uri)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
@@ -503,22 +503,23 @@ public class SIMS_Demo : MonoBehaviour
         InsResponse jObjText = (InsResponse) JsonConvert.DeserializeObject<InsResponse>(jObject.ToString());
         List<InspectionDto> list = new List<InspectionDto>(jObjText.data);
 
-        GameObject Item = Resources.Load<GameObject>("Item_Panel");
+        // GameObject Item = Resources.Load<GameObject>("Item_Panel");
+        GameObject Item = Resources.Load<GameObject>("Item_Panel_1");
+
+        // listCount = list.Count;
         int yValue = 0;
-
-        for(int i=0; i<list.Count; i++)
-        {
-            var index = Instantiate(Item, new Vector3(0, yValue, 0), Quaternion.identity);
-            index.name = "item"+i;
-            index.transform.SetParent(GameObject.Find("Content").transform);
-            yValue -= 200;
-        }
-
-        listCount = list.Count;
         int count = 0;
-
+        defectIdxList.Clear();
+    
         foreach(InspectionDto j in list)
         {
+            var index = Instantiate(Item, new Vector3(0, yValue, 0), Quaternion.identity);
+            index.name = "item@"+j.idx;
+            index.transform.SetParent(GameObject.Find("Content").transform);
+            yValue -= 200;
+
+            defectIdxList.Add(j.idx);
+
             //이미지 넣기
             byte[] newBytes22 = j.ins_bytes;
 
@@ -528,27 +529,25 @@ public class SIMS_Demo : MonoBehaviour
             Texture2D texture = new Texture2D(0, 0);
             texture.LoadImage(newBytes22);
             
-            GameObject imageObj = GameObject.Find("item"+count).transform.Find("Item_Image").gameObject;
+            GameObject imageObj = GameObject.Find("item@"+j.idx).transform.Find("Item_Image").gameObject;
             Image image = imageObj.GetComponent<Image>();
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
             image.sprite = sprite; 
 
             //하자 리스트 정보값 출력
-            GameObject.Find("item"+count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
+            GameObject.Find("item@"+j.idx).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
 
-            GameObject.Find("item"+count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
+            GameObject.Find("item@"+j.idx).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
 
-            GameObject.Find("item"+count).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
+            GameObject.Find("item@"+j.idx).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
 
-            GameObject.Find("item"+count).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
+            GameObject.Find("item@"+j.idx).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
 
-            GameObject.Find("item"+count).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
+            // GameObject.Find("item"+j.idx).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
 
             count++;
         }
     }
-
-    
 
     private void GetImage()
     {
@@ -635,6 +634,7 @@ public class SIMS_Demo : MonoBehaviour
                 GameObject Defectpoint= Resources.Load<GameObject>("DefectPrefab/Defect");  
                 GameObject Instance = (GameObject) Instantiate(Defectpoint, DefectPosition,a);
                 Instance.name = c.idx.ToString();
+
             }
         }
     }
@@ -667,11 +667,12 @@ public class SIMS_Demo : MonoBehaviour
 
     public void Off_List()
     {
-        int count = 0;
-        for(int i=0; i<listCount; i++)
+        // int count = 0;
+        for(int i=0; i<defectIdxList.Count; i++)
         {
-            Destroy(GameObject.Find("item"+count));
-            count++;
+            // Destroy(GameObject.Find("item"+count));
+            Destroy(GameObject.Find("item@"+defectIdxList[i]));
+            // count++;
         }
         Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
         On_Panel.gameObject.SetActive(false);
