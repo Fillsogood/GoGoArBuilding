@@ -1227,7 +1227,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uB9C8\uCEE4 \uCD2C\uC601"
+  m_Text: Marker
 --- !u!222 &1888487016
 CanvasRenderer:
   m_ObjectHideFlags: 0
