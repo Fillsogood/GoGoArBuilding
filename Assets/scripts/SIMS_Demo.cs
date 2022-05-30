@@ -51,6 +51,7 @@ public class Inspection
     public int model_idx;
     public string inspector_name;
     public string admin_name;
+    public int damage_space;
 	public int damage_type;
 	public int damage_object;
 	public float damage_loc_x;
@@ -104,8 +105,9 @@ public class InspectionDto
 	public string ad_image_url;
 	public string ad_image_size;
 	public string ad_image_type;
-    public string damage_name;
-    public string object_name;
+    public string space_name_en;
+    public string damage_name_en;
+    public string object_name_en;
     public string state_name;
 	public byte[] ins_bytes; 
 	public byte[] ad_bytes;
@@ -114,7 +116,7 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    private string serverPath = "http://14.5.62.24:8080";
+    private string serverPath = "http://14.7.197.84:8080";
     //private string serverPath = "http://localhost:8080";
 
 
@@ -143,7 +145,7 @@ public class SIMS_Demo : MonoBehaviour
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        string ip = "14.5.62.24";
+        string ip = "14.7.197.84";
         //string ip = "localhost";
         string port = "8080";
 
@@ -166,16 +168,11 @@ public class SIMS_Demo : MonoBehaviour
     // 점검자 정보 조회 inputfeild
     private void UpdateDataFormIns(InspectionDto ins)
     {
-        switch(ins.damage_type)
-        {
-            case 1 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "균열"; break;
-            case 2 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "부식"; break;
-            case 3 : GameObject.Find("txtDamageType").GetComponent<Text>().text = "변형"; break;
-        }
-        GameObject.Find("txtInsDate").GetComponent<Text>().text = "날짜 : "+ins.ins_date;
-        GameObject.Find("txtInsName").GetComponent<Text>().text = "점검자 : "+ins.inspector_name;
-        GameObject.Find("txtInsPosition").GetComponent<Text>().text = "하자 위치 : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
-        GameObject.Find("txtInsEtc").GetComponent<Text>().text = "기타사항 : "+ins.inspector_etc; 
+        GameObject.Find("txtDamageType").GetComponent<Text>().text = ins.space_name_en+"_"+ins.object_name_en+"_"+ins.damage_name_en;
+        GameObject.Find("txtInsDate").GetComponent<Text>().text = "Date : "+ins.ins_date;
+        GameObject.Find("txtInsName").GetComponent<Text>().text = "Inspector : "+ins.inspector_name;
+        GameObject.Find("txtInsPosition").GetComponent<Text>().text = "Location Defect : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
+        GameObject.Find("txtInsEtc").GetComponent<Text>().text = "Etc : "+ins.inspector_etc; 
     }
 
     private void UpdateDataFormAdmin(InspectionDto ins)
@@ -535,7 +532,7 @@ public class SIMS_Demo : MonoBehaviour
             image.sprite = sprite; 
 
             //하자 리스트 정보값 출력
-            GameObject.Find("item"+Count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.damage_name;
+            GameObject.Find("item"+Count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.space_name_en+"_"+j.object_name_en+"_"+j.damage_name_en;
 
             GameObject.Find("item"+Count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
 

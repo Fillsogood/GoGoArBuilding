@@ -1,24 +1,5 @@
 {
   "dependencies": {
-    "com.microsoft.azure.spatial-anchors-sdk.android": {
-      "version": "file:C:/Users/나연/Downloads/com.microsoft.azure.spatial-anchors-sdk.android-2.12.0 (1).tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {
-        "com.unity.xr.arcore": "4.0.12",
-        "com.microsoft.azure.spatial-anchors-sdk.core": "2.12.0"
-      }
-    },
-    "com.microsoft.azure.spatial-anchors-sdk.core": {
-      "version": "file:C:/Users/나연/Downloads/com.microsoft.azure.spatial-anchors-sdk.core-2.12.0.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {
-        "com.unity.subsystemregistration": "1.0.6",
-        "com.unity.xr.arsubsystems": "4.0.8",
-        "com.unity.xr.arfoundation": "4.0.12"
-      }
-    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
