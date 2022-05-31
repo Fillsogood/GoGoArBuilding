@@ -6,22 +6,34 @@ EditorUserSettings:
   serializedVersion: 4
   m_ConfigSettings:
     RecentlyUsedScenePath-0:
-      value: 224247031146467c02010b2e15026d3319051d650930273d3d251820adc83134eee817dba8093c393707fc732c3b0d33fd2b3b45e305031f08
-      flags: 0
-    RecentlyUsedScenePath-1:
-      value: 22424703114646680e0b0227036c6c111b07142f1f2b233e2867083debf42d
-      flags: 0
-    RecentlyUsedScenePath-2:
-      value: 22424703114646680e0b0227036c7d051f1b1c23222f0f3e3e391830f6e93b36acf238e0f323
-      flags: 0
-    RecentlyUsedScenePath-3:
       value: 2242470311464678010b0d2c50105a04021e162d3f681319620a1136e3ee740be7f322e0e93d2c7c0c2ba1290a371526
       flags: 0
+    RecentlyUsedScenePath-1:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b2bb1a923e7ee2e26
+      flags: 0
+    RecentlyUsedScenePath-2:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b2bb6a923e7ee2e26
+      flags: 0
+    RecentlyUsedScenePath-3:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b2bb0a923e7ee2e26
+      flags: 0
     RecentlyUsedScenePath-4:
-      value: 224247031146466a3f0d0326156c6c1313191d39631914032e281300e1e53a3dacf238e0f323
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b11efe631ecf40e3a2f2d4cfa320d2a18
       flags: 0
     RecentlyUsedScenePath-5:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b11efe631ecf40e3a2f2d50a1290a371526
+      flags: 0
+    RecentlyUsedScenePath-6:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b1beaf238e2f40e3a2f2d4cfa320d2a18
+      flags: 0
+    RecentlyUsedScenePath-7:
+      value: 224247031146467a1e1d0936323651141a12352b2b21257f1e2a183de7f37b2bb3a923e7ee2e26
+      flags: 0
+    RecentlyUsedScenePath-8:
       value: 22424703114646680e0b0227036c6b150503563f22213229
+      flags: 0
+    RecentlyUsedScenePath-9:
+      value: 224247031146466a3f0d0326156c6c1313191d39631914032e281300e1e53a3dacf238e0f323
       flags: 0
     UnityRemoteDevice:
       value: 225f4d46245b0d4902070862342649191512
