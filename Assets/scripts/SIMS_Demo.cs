@@ -135,8 +135,8 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    //private string serverPath = "http://14.7.197.84:8080";
-    private string serverPath = "http://localhost:8080";
+    private string serverPath = "http://14.7.197.129:8080";
+    //private string serverPath = "http://localhost:8080";
 
 
     private string serverPort = "8080";
@@ -165,8 +165,8 @@ public class SIMS_Demo : MonoBehaviour
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        //string ip = "14.7.197.84";
-        string ip = "localhost";
+        string ip = "14.7.197.129";
+        //string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -696,13 +696,17 @@ public class SIMS_Demo : MonoBehaviour
             Transform points = GameObject.Find("StartPoint").GetComponent<Transform>();
             string[] msg = list[0].model_3dfile_name.Split('.');
 
+            GameObject Building= Resources.Load<GameObject>("BuildingPrefab/" + msg[0]);
+            GameObject Instance = (GameObject) Instantiate(Building, points.position, points.rotation );
+
+            /* AssetBundleMagic
             AssetBundleMagic.DownloadBundle(msg[0],
             delegate(AssetBundle ab){
                 Instantiate (ab.LoadAsset(msg[0]), points.position, points.rotation);
             },
             delegate(string error){
                 Debug.LogError(error);
-            });
+            });*/
         }
     }
 
