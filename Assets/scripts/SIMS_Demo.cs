@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Text;
 using UnityEngine.Android;
+using Dummiesman;
 using Jacovone.AssetBundleMagic;
 
 
@@ -135,8 +136,8 @@ public class InspectionDto
 public class SIMS_Demo : MonoBehaviour
 {
     //private string serverPath = "http://14.7.197.190:8080";
-    private string serverPath = "http://14.7.197.129:8080";
-    //private string serverPath = "http://localhost:8080";
+    //private string serverPath = "http://14.7.197.129:8080";
+    private string serverPath = "http://localhost:8080";
 
 
     private string serverPort = "8080";
@@ -165,8 +166,8 @@ public class SIMS_Demo : MonoBehaviour
     private void UpdateServerIpPort()
     {
         //string ip = "14.7.197.190";
-        string ip = "14.7.197.129";
-        //string ip = "localhost";
+        //string ip = "14.7.197.129";
+        string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -284,8 +285,7 @@ public class SIMS_Demo : MonoBehaviour
     public void OnClick_ModelInstantiate()
     {
         UpdateServerIpPort();
-       string json = "{\"idx\" : " + SingletonModelIdx.instance.ModelIdx + "}";
-        StartCoroutine(InsModel("model/select_idx",json));
+        InsModel("model/select_idx");
     }
 
     //Start시 Defect DB에 저장된 하자 갯수만큼 소환
@@ -664,51 +664,58 @@ public class SIMS_Demo : MonoBehaviour
     }
 
 
-      private IEnumerator InsModel(string uri,string data)
+    private void InsModel(string uri)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
+        string responseText = string.Empty;
 
-         var request = new UnityWebRequest(url, "POST");
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
-       
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+        request.Method = "POST";
+        request.Timeout = 30 * 10000; // 30초
+        request.ContentType = "application/json; charset=utf-8";
+
+        string postData ="{\"idx\" : "+3+"}"; // SingletonModelIdx.instance.ModelIdx 마커에서 모델 idx 받아오면 나중에 바꿔줘야함
         
-        request.SetRequestHeader("Content-Type", "application/json");
+        byte[] byteArray =Encoding.UTF8.GetBytes(postData);
 
-          //응답을 기다립니다.
-        yield return request.SendWebRequest();
+        Stream dataStream = request.GetRequestStream();
+        dataStream.Write(byteArray, 0, byteArray.Length);
+        dataStream.Close();
 
-        if (request.result != UnityWebRequest.Result.Success)
+        using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
         {
-            Debug.Log("객체 Idx로 조회가 실패했습니다. " + request.responseCode);
+            HttpStatusCode status = resp.StatusCode;
+            if (status != HttpStatusCode.OK)
+            {
+                Debug.Log("모델 ID " + SingletonModelIdx.instance.ModelIdx + "이 조회에 실패했습니다. " + status);
            
+            }
+            Stream respStream = resp.GetResponseStream();
+            using (StreamReader sr = new StreamReader(respStream))
+            {
+                responseText = sr.ReadToEnd();
+            }
         }
-        else
-        {
-            byte[] results = request.downloadHandler.data;
-            var message = Encoding.UTF8.GetString(results);
-            Debug.Log(message);     //응답했다.
 
-            ModelResponse jObjText = (ModelResponse)JsonUtility.FromJson<ModelResponse>(message);
-            List<ModelDto> list = new List<ModelDto>(jObjText.data);
+        var jObject = JObject.Parse(responseText);
+               
+        ModelResponse jObjText = (ModelResponse) JsonConvert.DeserializeObject<ModelResponse>(jObject.ToString());
+        List<ModelDto> list = new List<ModelDto>(jObjText.data);
 
-            Transform points = GameObject.Find("StartPoint").GetComponent<Transform>();
-            string[] msg = list[0].model_3dfile_name.Split('.');
+        string[] msgName = list[0].model_3dfile_name.Split('.');
+        byte[] msg = list[0].model_3dbytes;
 
-            GameObject Building= Resources.Load<GameObject>("BuildingPrefab/" + msg[0]);
-            GameObject Instance = (GameObject) Instantiate(Building, points.position, points.rotation );
+        string write_path = Application.dataPath + "/Resources/" + msgName[0];
+ 
+        System.IO.File.WriteAllBytes(write_path, msg);
 
-            /* AssetBundleMagic
-            AssetBundleMagic.DownloadBundle(msg[0],
-            delegate(AssetBundle ab){
-                Instantiate (ab.LoadAsset(msg[0]), points.position, points.rotation);
-            },
-            delegate(string error){
-                Debug.LogError(error);
-            });*/
-        }
-    }
+        GameObject loadedObject = new OBJLoader().Load(write_path);
+
+        Transform points = GameObject.Find("StartPoint").GetComponent<Transform>();
+        GameObject Building= Resources.Load<GameObject>(msgName[0]);
+
+     }
+    
 
     public void OnQuit()
     {
