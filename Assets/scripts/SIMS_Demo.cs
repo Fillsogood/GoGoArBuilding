@@ -135,24 +135,18 @@ public class InspectionDto
 
 public class SIMS_Demo : MonoBehaviour
 {
-    //private string serverPath = "http://14.7.197.190:8080";
-    //private string serverPath = "http://14.7.197.129:8080";
-    private string serverPath = "http://localhost:8080";
-
-
+    private string serverPath = "http://14.7.197.215:8080";
+    //private string serverPath = "http://localhost:8080";
     private string serverPort = "8080";
 
     public int DefectIdx{get;set;}
-
     private Vector3 DefectPosition;
 
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
     private bool ischeck =true;
     private int listCount = 0;
-    //private List<int> defectIdxList = new List<int>();
     
-
     void Start()
     {
         if (Application.platform == RuntimePlatform.Android)
@@ -165,9 +159,8 @@ public class SIMS_Demo : MonoBehaviour
     
     private void UpdateServerIpPort()
     {
-        //string ip = "14.7.197.190";
-        //string ip = "14.7.197.129";
-        string ip = "localhost";
+        string ip = "14.7.197.215";
+        //string ip = "localhost";
         string port = "8080";
 
         if (ip == "" || port == "")
@@ -236,8 +229,8 @@ public class SIMS_Demo : MonoBehaviour
         {
             _Ins.state = 0;
         }
-            //_Ins.ins_image_name = GameObject.Find("ifPicturePath").GetComponent<InputField>().text.ToString();
-            _Ins.ins_image_name = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtPicturepath").GetComponent<Text>().text.ToString();
+        
+        _Ins.ins_image_name = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtPicturepath").GetComponent<Text>().text.ToString();
 
         //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
@@ -285,7 +278,7 @@ public class SIMS_Demo : MonoBehaviour
     public void OnClick_ModelInstantiate()
     {
         UpdateServerIpPort();
-        InsModel("model/select_idx");
+        ModelInstantiate("model/select_idx");
     }
 
     //Start시 Defect DB에 저장된 하자 갯수만큼 소환
@@ -663,8 +656,7 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-
-    private void InsModel(string uri)
+    private void ModelInstantiate(string uri)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
         string responseText = string.Empty;
@@ -674,7 +666,7 @@ public class SIMS_Demo : MonoBehaviour
         request.Timeout = 30 * 10000; // 30초
         request.ContentType = "application/json; charset=utf-8";
 
-        string postData ="{\"idx\" : "+3+"}"; // SingletonModelIdx.instance.ModelIdx 마커에서 모델 idx 받아오면 나중에 바꿔줘야함
+        string postData ="{\"idx\" : "+SingletonModelIdx.instance.ModelIdx+"}"; //  마커에서 모델 idx 받아오면 나중에 바꿔줘야함
         
         byte[] byteArray =Encoding.UTF8.GetBytes(postData);
 
@@ -698,24 +690,35 @@ public class SIMS_Demo : MonoBehaviour
         }
 
         var jObject = JObject.Parse(responseText);
-               
+
         ModelResponse jObjText = (ModelResponse) JsonConvert.DeserializeObject<ModelResponse>(jObject.ToString());
         List<ModelDto> list = new List<ModelDto>(jObjText.data);
 
-        string[] msgName = list[0].model_3dfile_name.Split('.');
-        byte[] msg = list[0].model_3dbytes;
+        Control con = GameObject.Find("Manager").GetComponent<Control>();
+        con.model_name = list[0].model_3dfile_name;
+        
+        byte[] msgByte = list[0].model_3dbytes;
 
-        string write_path = Application.dataPath + "/Resources/" + msgName[0];
- 
-        System.IO.File.WriteAllBytes(write_path, msg);
+        string write_path = Application.persistentDataPath +"/"+ list[0].model_3dfile_name; 
+        
+        // SimsLog(write_path);
+        File.WriteAllBytes(write_path, msgByte);
 
-        GameObject loadedObject = new OBJLoader().Load(write_path);
+        Debug.Log(list[0].model_3dfile_name);
+        StartCoroutine(LoadFromMemoryAsync(write_path, list[0].model_3dfile_name));
+    }
 
-        Transform points = GameObject.Find("StartPoint").GetComponent<Transform>();
-        GameObject Building= Resources.Load<GameObject>(msgName[0]);
+    IEnumerator LoadFromMemoryAsync(string path, string object_name)
+    {
+        AssetBundleCreateRequest createRequest = AssetBundle.LoadFromFileAsync(path); //Asset bundle load
+        yield return createRequest;
 
-     }
-    
+        AssetBundle bundle = createRequest.assetBundle;
+
+        var prefab = bundle.LoadAsset(object_name); //asset bundle에서 사용하고 싶은 object find
+        Transform points = GameObject.Find("StartModelPoint").GetComponent<Transform>();
+        Instantiate(prefab, points.position, points.rotation); //prefab instance화
+    }
 
     public void OnQuit()
     {
