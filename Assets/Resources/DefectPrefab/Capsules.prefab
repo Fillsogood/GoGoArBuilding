@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 1685252255186589893}
   - component: {fileID: 8143880984767658812}
   - component: {fileID: 644147548574666147}
-  - component: {fileID: 102879065668783997}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: defect
@@ -142,19 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93866c4e49edc214aaa03823e0208192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &102879065668783997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5533231579726157014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bada5dfc4986884ebceba165f837a96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraPlayer: {fileID: 0}
 --- !u!1 &8655289977424925945
 GameObject:
   m_ObjectHideFlags: 0

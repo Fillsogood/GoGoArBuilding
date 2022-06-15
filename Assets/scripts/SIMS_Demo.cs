@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-
 using Newtonsoft.Json; 
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -13,6 +12,7 @@ using System.Text;
 using UnityEngine.Android;
 using Dummiesman;
 using Jacovone.AssetBundleMagic;
+using TMPro;
 
 
 [System.Serializable]
@@ -135,11 +135,12 @@ public class InspectionDto
 
 public class SIMS_Demo : MonoBehaviour
 {
-    private string serverPath = "http://14.7.197.215:8080";
+    private string serverPath = "http://112.157.106.35:8080";
     //private string serverPath = "http://localhost:8080";
     private string serverPort = "8080";
 
     public int DefectIdx{get;set;}
+    public int AnchorKey{get;set;}
     private Vector3 DefectPosition;
 
     private Inspection _Ins = new Inspection();
@@ -159,7 +160,7 @@ public class SIMS_Demo : MonoBehaviour
     
     private void UpdateServerIpPort()
     {
-        string ip = "14.7.197.215";
+        string ip = "112.157.106.35";
         //string ip = "localhost";
         string port = "8080";
 
@@ -198,7 +199,7 @@ public class SIMS_Demo : MonoBehaviour
     public void ClearDataInspection()
     {  
         GameObject.Find("ifAdminName").GetComponent<InputField>().text = "";
-        GameObject.Find("ifAdminEtc").GetComponent<InputField>().text = "";
+        GameObject.Find("ifAdminEtc").GetComponent<TMP_InputField>().text = "";
         Debug.Log(DefectPosition.x.ToString() + " / " + DefectPosition.y.ToString() + " / "+  DefectPosition.z.ToString());
         GameObject.Find("Capsules(Clone)").transform.Find("Capsule").transform.position=DefectPosition;
         Back();
@@ -219,7 +220,7 @@ public class SIMS_Demo : MonoBehaviour
         }
 
         _Ins.admin_name = GameObject.Find("ifAdminName").GetComponent<InputField>().text.ToString();
-        _Ins.admin_etc = GameObject.Find("ifAdminEtc").GetComponent<InputField>().text.ToString();
+        _Ins.admin_etc = GameObject.Find("ifAdminEtc").GetComponent<TMP_InputField>().text.ToString();
 
         try
         {
