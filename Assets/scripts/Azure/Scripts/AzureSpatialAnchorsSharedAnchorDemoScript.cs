@@ -39,9 +39,9 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
 
         private readonly Dictionary<AppState, DemoStepParams> stateParams = new Dictionary<AppState, DemoStepParams>
         {
-            { AppState.DemoStepChooseFlow,new DemoStepParams() { StepMessage = "Next: Choose your Demo Flow", StepColor = Color.clear }},
-            { AppState.DemoStepInputAnchorNumber,new DemoStepParams() { StepMessage = "Next: Input anchor number", StepColor = Color.clear }},
-            { AppState.DemoStepCreateSession,new DemoStepParams() { StepMessage = "Next: Create CloudSpatialAnchorSession", StepColor = Color.clear }},
+            { AppState.DemoStepChooseFlow,new DemoStepParams() { StepMessage = "Next: Please Touch the Load Defect Button", StepColor = Color.clear }},   //
+            { AppState.DemoStepInputAnchorNumber,new DemoStepParams() { StepMessage = "Next: Loading Defect Anchor number", StepColor = Color.clear }},  //
+            { AppState.DemoStepCreateSession,new DemoStepParams() { StepMessage = "Next: Load Defect in AR, Please Touch the Load Defect Button", StepColor = Color.clear }}, //
             { AppState.DemoStepConfigSession,new DemoStepParams() { StepMessage = "Next: Configure CloudSpatialAnchorSession", StepColor = Color.clear }},
             { AppState.DemoStepStartSession,new DemoStepParams() { StepMessage = "Next: Start CloudSpatialAnchorSession", StepColor = Color.clear }},
             { AppState.DemoStepCreateLocalAnchor,new DemoStepParams() { StepMessage = "Tap a surface to add the local anchor.", StepColor = Color.red }},
@@ -49,12 +49,12 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
             { AppState.DemoStepSavingCloudAnchor,new DemoStepParams() { StepMessage = "Saving local anchor to cloud...", StepColor = Color.red }},
             { AppState.DemoStepStopSession,new DemoStepParams() { StepMessage = "Next: Stop cloud anchor session", StepColor = Color.red }},
             { AppState.DemoStepDestroySession,new DemoStepParams() { StepMessage = "Next: Destroy Cloud Anchor session", StepColor = Color.clear }},
-            { AppState.DemoStepCreateSessionForQuery,new DemoStepParams() { StepMessage = "Next: Create CloudSpatialAnchorSession for query", StepColor = Color.clear }},
-            { AppState.DemoStepStartSessionForQuery,new DemoStepParams() { StepMessage = "Next: Start CloudSpatialAnchorSession for query", StepColor = Color.clear }},
-            { AppState.DemoStepLookForAnchor,new DemoStepParams() { StepMessage = "Next: Look for anchor", StepColor = Color.clear }},
-            { AppState.DemoStepLookingForAnchor,new DemoStepParams() { StepMessage = "Looking for anchor...", StepColor = Color.clear }},
-            { AppState.DemoStepStopSessionForQuery,new DemoStepParams() { StepMessage = "Next: Stop CloudSpatialAnchorSession for query", StepColor = Color.red }},
-            { AppState.DemoStepComplete,new DemoStepParams() { StepMessage = "Next: Restart demo", StepColor = Color.clear }}
+            { AppState.DemoStepCreateSessionForQuery,new DemoStepParams() { StepMessage = "Next: Create CloudSpatialAnchorSession for query", StepColor = Color.clear }},   //
+            { AppState.DemoStepStartSessionForQuery,new DemoStepParams() { StepMessage = "Next: Start CloudSpatialAnchorSession for query", StepColor = Color.clear }},     //
+            { AppState.DemoStepLookForAnchor,new DemoStepParams() { StepMessage = "Next: Look for Defect", StepColor = Color.clear }},  //
+            { AppState.DemoStepLookingForAnchor,new DemoStepParams() { StepMessage = "Looking for Defect...", StepColor = Color.clear }},   //
+            { AppState.DemoStepStopSessionForQuery,new DemoStepParams() { StepMessage = "Next: Load Complete", StepColor = Color.red }}, //
+            { AppState.DemoStepComplete,new DemoStepParams() { StepMessage = "Next: Touch the Load Defect button to continue loading.", StepColor = Color.clear }}  //
         };
 
         #if !UNITY_EDITOR

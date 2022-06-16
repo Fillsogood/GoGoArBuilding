@@ -17,6 +17,7 @@ public class GyroScopeCtr : MonoBehaviour
     Vector3 m_PlayerRot;
 
     static double GyroRotY;
+    Text ARText;
 
     void Start()
     {
@@ -24,10 +25,13 @@ public class GyroScopeCtr : MonoBehaviour
         Capsule.transform.position =this.transform.position;
         this.transform.parent = Capsule.transform;       
         Input.gyro.enabled=true;
+
         xText = GameObject.Find("Canvas").transform.Find("XText");
         x=xText.GetComponent<Text>();
         yText = GameObject.Find("Canvas").transform.Find("YText");
         y=yText.GetComponent<Text>();
+
+        ARText = GameObject.Find("Canvas").transform.Find("CreateFlowText").GetComponent<Text>();
     }
 
     protected void Update()
@@ -40,40 +44,44 @@ public class GyroScopeCtr : MonoBehaviour
             y.text="Y:"+pos.z;
             gyroupdate(); 
         }
-        
-        
     }
 
     void FixedUpdate()
     {
-        
-        AddRigidbody();
-        
-        if(average()>=0.0612304173409939 && average()<=0.09&&!isBorder)
+        //AR 앵커 저장 전, 저장 후에만 움직임
+        if(ARText.text == "Load Defect" || ARText.text == "Next: Please Touch the Load Defect Button" || ARText.text == "Next: Touch the Load Defect button to continue loading.")
         {
-            //이동
-            Capsule.transform.Translate(-speed,0,0); 
-        }
-        else if(average()>=-0.00394487800076604||average()<=0.00479192985221744 &&!isBorder)
-        {
-           //멈추고 돌때...
-        }      
-         
-        if(Istri&&Capsule.activeSelf==true)
-        {           
-            if(Capsule.GetComponent<Rigidbody>()==null)
+            AddRigidbody();
+            if(average()>=0.0612304173409939 && average()<=0.09&&!isBorder)
             {
-                Capsule.AddComponent<Rigidbody>();   
+                //이동
+                Capsule.transform.Translate(-speed,0,0); 
+            }
+            else if(average()>=-0.00394487800076604||average()<=0.00479192985221744 &&!isBorder)
+            {
+                //멈추고 돌때...
+            }      
+
+            if(Istri&&Capsule.activeSelf==true)
+            {           
+                if(Capsule.GetComponent<Rigidbody>()==null)
+                {
+                    Capsule.AddComponent<Rigidbody>();   
+                }
+                else
+                {
+                    rb = Capsule.GetComponent<Rigidbody>();       
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                }
             }
             else
             {
-                rb = Capsule.GetComponent<Rigidbody>();       
-                rb.constraints = RigidbodyConstraints.FreezeAll;
+                Destroy(rb);
             }
         }
         else
         {
-            Destroy(rb);
+            //AR 애져앵커 저장 중에는 캡슐이 움직이지 않음
         }
     }
 
