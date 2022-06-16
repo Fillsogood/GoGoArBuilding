@@ -44,16 +44,16 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
             { AppState.DemoStepCreateSession,new DemoStepParams() { StepMessage = "Next: Create CloudSpatialAnchorSession", StepColor = Color.clear }},
             { AppState.DemoStepConfigSession,new DemoStepParams() { StepMessage = "Next: Configure CloudSpatialAnchorSession", StepColor = Color.clear }},
             { AppState.DemoStepStartSession,new DemoStepParams() { StepMessage = "Next: Start CloudSpatialAnchorSession", StepColor = Color.clear }},
-            { AppState.DemoStepCreateLocalAnchor,new DemoStepParams() { StepMessage = "Tap a surface to add the local anchor.", StepColor = Color.blue }},
-            { AppState.DemoStepSaveCloudAnchor,new DemoStepParams() { StepMessage = "Next: Save local anchor to cloud", StepColor = Color.yellow }},
-            { AppState.DemoStepSavingCloudAnchor,new DemoStepParams() { StepMessage = "Saving local anchor to cloud...", StepColor = Color.yellow }},
-            { AppState.DemoStepStopSession,new DemoStepParams() { StepMessage = "Next: Stop cloud anchor session", StepColor = Color.green }},
+            { AppState.DemoStepCreateLocalAnchor,new DemoStepParams() { StepMessage = "Tap a surface to add the local anchor.", StepColor = Color.red }},
+            { AppState.DemoStepSaveCloudAnchor,new DemoStepParams() { StepMessage = "Next: Save local anchor to cloud", StepColor = Color.red}},
+            { AppState.DemoStepSavingCloudAnchor,new DemoStepParams() { StepMessage = "Saving local anchor to cloud...", StepColor = Color.red }},
+            { AppState.DemoStepStopSession,new DemoStepParams() { StepMessage = "Next: Stop cloud anchor session", StepColor = Color.red }},
             { AppState.DemoStepDestroySession,new DemoStepParams() { StepMessage = "Next: Destroy Cloud Anchor session", StepColor = Color.clear }},
             { AppState.DemoStepCreateSessionForQuery,new DemoStepParams() { StepMessage = "Next: Create CloudSpatialAnchorSession for query", StepColor = Color.clear }},
             { AppState.DemoStepStartSessionForQuery,new DemoStepParams() { StepMessage = "Next: Start CloudSpatialAnchorSession for query", StepColor = Color.clear }},
             { AppState.DemoStepLookForAnchor,new DemoStepParams() { StepMessage = "Next: Look for anchor", StepColor = Color.clear }},
             { AppState.DemoStepLookingForAnchor,new DemoStepParams() { StepMessage = "Looking for anchor...", StepColor = Color.clear }},
-            { AppState.DemoStepStopSessionForQuery,new DemoStepParams() { StepMessage = "Next: Stop CloudSpatialAnchorSession for query", StepColor = Color.yellow }},
+            { AppState.DemoStepStopSessionForQuery,new DemoStepParams() { StepMessage = "Next: Stop CloudSpatialAnchorSession for query", StepColor = Color.red }},
             { AppState.DemoStepComplete,new DemoStepParams() { StepMessage = "Next: Restart demo", StepColor = Color.clear }}
         };
 
@@ -419,14 +419,14 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
                     break;
                 case AppState.DemoStepStopSession:
                     CloudManager.StopSession();
-                    CleanupSpawnedObjects();
+                    //CleanupSpawnedObjects();
                     await CloudManager.ResetSessionAsync();
                     currentAppState = AppState.DemoStepComplete;
                     break;
                 case AppState.DemoStepComplete:
                     currentCloudAnchor = null;
                     currentAppState = AppState.DemoStepChooseFlow;
-                    CleanupSpawnedObjects();
+                    //CleanupSpawnedObjects();
                     break;
                 default:
                     Debug.Log("Shouldn't get here for app state " + currentAppState);
@@ -468,7 +468,7 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
                     currentCloudAnchor = null;
                     currentWatcher = null;
                     currentAppState = AppState.DemoStepChooseFlow;
-                    CleanupSpawnedObjects();
+                    //CleanupSpawnedObjects();
                     break;
                 default:
                     Debug.Log("Shouldn't get here for app state " + currentAppState);
@@ -528,14 +528,14 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
 
         protected override void CleanupSpawnedObjects()
         {
-            base.CleanupSpawnedObjects();
+            // base.CleanupSpawnedObjects();
 
-            for (int index = 0; index < otherSpawnedObjects.Count; index++)
-            {
-                Destroy(otherSpawnedObjects[index]);
-            }
+            // for (int index = 0; index < otherSpawnedObjects.Count; index++)
+            // {
+            //     Destroy(otherSpawnedObjects[index]);
+            // }
 
-            otherSpawnedObjects.Clear();
+            // otherSpawnedObjects.Clear();
         }
 
         /// <summary>

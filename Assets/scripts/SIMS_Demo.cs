@@ -92,6 +92,7 @@ public class Inspection
 	public string ad_image_size;
 	public string ad_image_type;
 	public byte[] ad_bytes;
+    public int rowkey;
 
     public Inspection () {} 
     public Inspection (int _idx)
@@ -131,6 +132,7 @@ public class InspectionDto
     public string state_name;
 	public byte[] ins_bytes; 
 	public byte[] ad_bytes;
+    public int rowkey;
 }
 
 public class SIMS_Demo : MonoBehaviour
@@ -140,16 +142,18 @@ public class SIMS_Demo : MonoBehaviour
     private string serverPort = "8080";
 
     public int DefectIdx{get;set;}
-    public int AnchorKey{get;set;}
     private Vector3 DefectPosition;
 
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
     private bool ischeck =true;
     private int listCount = 0;
+
+    DefectPanel defectPanel;
     
     void Start()
     {
+        defectPanel = GameObject.Find("Manager").GetComponent<DefectPanel>();
         if (Application.platform == RuntimePlatform.Android)
         { 
             StartCoroutine("CheckPermissionAndroid");
@@ -236,21 +240,28 @@ public class SIMS_Demo : MonoBehaviour
         //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
 
-    // 관리자 insert
+
     public void OnClick_InsInsert()
     {
         UpdateDataInspection();
         StartCoroutine(this.PostFormDataImage("inspection", "adminupdate", _Ins.ins_image_name));
         
     }
-
-    //점검자 정보 조회 
+    
     public void OnClick_InsSelect()
     {
         UpdateServerIpPort();
         var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
         ischeck=true;
         StartCoroutine(this.InsPostIdx("inspection/select_idx",json)); 
+    }
+
+    public void OnClick_RowKeySelect()
+    {
+        UpdateServerIpPort();
+        var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
+        ischeck=true;
+        StartCoroutine(this.InsRowKeyPostIdx("inspection/select_idx",json)); 
     }
     
     public void OnClick_InsGetImage()
@@ -435,6 +446,44 @@ public class SIMS_Demo : MonoBehaviour
             {
                 count++;
                 Debug.Log(count.ToString() + " : " + c.admin_name+ "/" + c.admin_etc + "/" + c.state);
+            }
+        }
+    }
+
+    //애져앵커 키값 조회
+    private IEnumerator InsRowKeyPostIdx(string uri,string data)
+    {
+        var url = string.Format("{0}/{1}", serverPath, uri);
+
+         var request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
+       
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        
+        request.SetRequestHeader("Content-Type", "application/json");
+
+          //응답을 기다립니다.
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
+           
+        }
+        else
+        {
+            byte[] results = request.downloadHandler.data;
+            var message = Encoding.UTF8.GetString(results);
+            Debug.Log(message);     //응답했다.
+
+            InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
+            List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
+            
+            foreach (InspectionDto c in list1)
+            {
+                Debug.Log("sims_demo - rowkey : " + c.rowkey);
+                GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text = c.rowkey.ToString();
             }
         }
     }

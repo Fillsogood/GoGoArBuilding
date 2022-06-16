@@ -8,6 +8,8 @@ public class DefectPanel : MonoBehaviour
     Transform Map;
     SIMS_Demo _Sims;
     Text ARKeyValueText;
+    public int AnchorKey{get;set;}
+
     void Start()
     {
         _Sims = GameObject.Find("Manager").GetComponent<SIMS_Demo>();
@@ -20,10 +22,13 @@ public class DefectPanel : MonoBehaviour
        //GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
         
         if(other.tag=="defect"&&Map.gameObject.activeSelf == true)
-        {       
-            //Defectpanel.gameObject.SetActive(true);
+        {    
             _Sims.DefectIdx= int.Parse(this.name);
-            GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text = "15"; //_Sims.AnchorKey
+
+            _Sims.OnClick_RowKeySelect();
+            Debug.Log("======DefectPanel - AnchorKey : " + AnchorKey.ToString() + "======");
+            // GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text = AnchorKey.ToString();
+
             GameObject.Find("Canvas").transform.Find("MiniMap").gameObject.SetActive(false);
             GameObject.Find("Canvas").transform.Find("LocateFlowButton").GetComponent<Button>().interactable = true;
             GameObject.Find("Canvas").transform.Find("AdminDefectBtn").GetComponent<Button>().interactable = true;
