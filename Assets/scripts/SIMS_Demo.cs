@@ -14,7 +14,6 @@ using Dummiesman;
 using Jacovone.AssetBundleMagic;
 using TMPro;
 
-
 [System.Serializable]
 public class Model
 {
@@ -28,7 +27,6 @@ public class Model
     public string model_2dfile;
     public string model_2dfile_type;
     public string model_2dfile_size;
-
 }
 
 [System.Serializable]
@@ -141,15 +139,32 @@ public class SIMS_Demo : MonoBehaviour
     //private string serverPath = "http://localhost:8080";
     private string serverPort = "8080";
 
-    public int DefectIdx{get;set;}
-    private Vector3 DefectPosition;
-
     private Inspection _Ins = new Inspection();
     private Model _model = new Model();
+    private Vector3 DefectPosition;
+
+    public Text txtDamageType;
+    public Text txtInsDate;
+    public Text txtInsName;
+    public Text txtInsPosition;
+    public Text txtInsEtc;
+    public Text txtPicturepath;
+    public Text ARKeyValue;
+
+    public InputField ifAdminName;
+    public TMP_InputField ifAdminEtc;
+    public Dropdown DdAdminState;
+
+    public GameObject Panel;
+    public GameObject List_Panel;
+    public GameObject List_on_btn;
+    public GameObject List_off_btn;
+
+    private DefectPanel defectPanel;
+    public int DefectIdx{get;set;}
+
     private bool ischeck =true;
     private int listCount = 0;
-
-    DefectPanel defectPanel;
     
     void Start()
     {
@@ -159,7 +174,7 @@ public class SIMS_Demo : MonoBehaviour
             StartCoroutine("CheckPermissionAndroid");
         }
         Start_DefectInstantiate();
-        OnClick_ModelInstantiate();
+        Start_ModelInstantiate();
     }
     
     private void UpdateServerIpPort()
@@ -181,31 +196,31 @@ public class SIMS_Demo : MonoBehaviour
 
     private void SimsLog(string text)
     {
-       GameObject.Find("Text_console").GetComponent<Text>().text += text + "\n";
+       //GameObject.Find("Text_console").GetComponent<Text>().text += text + "\n";
     }
 
     // 점검자 정보 조회 inputfeild
     private void UpdateDataFormIns(InspectionDto ins)
     {
-        GameObject.Find("txtDamageType").GetComponent<Text>().text = ins.space_name_en+"_"+ins.object_name_en+"_"+ins.damage_name_en;
-        GameObject.Find("txtInsDate").GetComponent<Text>().text = "Date : "+ins.ins_date;
-        GameObject.Find("txtInsName").GetComponent<Text>().text = "Inspector : "+ins.inspector_name;
-        GameObject.Find("txtInsPosition").GetComponent<Text>().text = "Location Defect : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
-        GameObject.Find("txtInsEtc").GetComponent<Text>().text = "Etc : "+ins.inspector_etc; 
+        txtDamageType.text = ins.space_name_en+"_"+ins.object_name_en+"_"+ins.damage_name_en;
+        txtInsDate.text = "Date : "+ins.ins_date;
+        txtInsName.text = "Inspector : "+ins.inspector_name;
+        txtInsPosition.text = "Location Defect : "+ins.damage_loc_x + " / " + ins.damage_loc_y + " / " + ins.damage_loc_z;
+        txtInsEtc.text = "Etc : "+ins.inspector_etc; 
     }
 
     private void UpdateDataFormAdmin(InspectionDto ins)
     {
-        GameObject.Find("DdAdminState").GetComponent<Dropdown>().value = ins.state -1;
+        DdAdminState.value = ins.state -1;
     }
 
     // 관리자 inputfeild의 값 삭제
     public void ClearDataInspection()
     {  
-        GameObject.Find("ifAdminName").GetComponent<InputField>().text = "";
-        GameObject.Find("ifAdminEtc").GetComponent<TMP_InputField>().text = "";
-        Debug.Log(DefectPosition.x.ToString() + " / " + DefectPosition.y.ToString() + " / "+  DefectPosition.z.ToString());
-        GameObject.Find("Capsules(Clone)").transform.Find("Capsule").transform.position=DefectPosition;
+        ifAdminName.text = "";
+        ifAdminEtc.text = "";
+        
+        GameObject.Find("Capsules(Clone)").transform.Find("Capsule").transform.position = DefectPosition;
         Back();
     }
 
@@ -223,19 +238,19 @@ public class SIMS_Demo : MonoBehaviour
             _Ins.idx = -1;
         }
 
-        _Ins.admin_name = GameObject.Find("ifAdminName").GetComponent<InputField>().text.ToString();
-        _Ins.admin_etc = GameObject.Find("ifAdminEtc").GetComponent<TMP_InputField>().text.ToString();
+        _Ins.admin_name = ifAdminName.text;
+        _Ins.admin_etc = ifAdminEtc.text;
 
         try
         {
-            _Ins.state = (GameObject.Find("DdAdminState").GetComponent<Dropdown>().value)+1;//
+            _Ins.state = (DdAdminState.value) + 1;
         }
         catch (FormatException)
         {
             _Ins.state = 0;
         }
         
-        _Ins.ins_image_name = GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtPicturepath").GetComponent<Text>().text.ToString();
+        _Ins.ins_image_name = txtPicturepath.text;
 
         //Debug.Log("Inspection DB : " + _Ins.idx.ToString() + "/" + _Ins.ins_date + "/" + _Ins.inspector_name + "/" + _Ins.damage_type.ToString() + "/" + _Ins.damage_object + "/" + _Ins.damage_loc_x.ToString() + "/" + _Ins.damage_loc_y.ToString() + "/" + _Ins.damage_loc_z.ToString() + "/" + _Ins.ins_image_name);       
     }
@@ -245,15 +260,16 @@ public class SIMS_Demo : MonoBehaviour
     {
         UpdateDataInspection();
         StartCoroutine(this.PostFormDataImage("inspection", "adminupdate", _Ins.ins_image_name));
-        
     }
     
     public void OnClick_InsSelect()
     {
         UpdateServerIpPort();
+        Debug.Log("=====" + DefectIdx);
         var json = JsonConvert.SerializeObject(new Inspection(DefectIdx));
         ischeck=true;
-        StartCoroutine(this.InsPostIdx("inspection/select_idx",json)); 
+        StartCoroutine(this.InsPostIdx("inspection/select_idx",json));
+        GetImage();
     }
 
     public void OnClick_RowKeySelect()
@@ -267,15 +283,12 @@ public class SIMS_Demo : MonoBehaviour
     public void OnClick_InsGetImage()
     {
         UpdateServerIpPort();
-        GetImage();
-        //StartCoroutine(this.GetInsAll("inspection/selectall")); 
     }
 
     public void OnClick_InsSelectList()
     {
         UpdateServerIpPort();
         On_List();
-        // var json = JsonConvert.SerializeObject(new Inspection(SingletonModelIdx.instance.ModelIdx));
         InsModelIdx("inspection/select_modelidx"); 
     }
 
@@ -287,7 +300,7 @@ public class SIMS_Demo : MonoBehaviour
         StartCoroutine(this.InsPostIdx("inspection/select_idx",json));    
     }
 
-    public void OnClick_ModelInstantiate()
+    public void Start_ModelInstantiate()
     {
         UpdateServerIpPort();
         ModelInstantiate("model/select_idx");
@@ -329,7 +342,6 @@ public class SIMS_Demo : MonoBehaviour
                 yield break;
             }
         }
-
         //string fileLocation = "/storage/emulated/0" + "/DCIM/Screenshots/"; // "mnt/sdcard/DCIM/Screenshots/";
     }
 
@@ -409,53 +421,12 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-    private IEnumerator InsPostModelIdx(string uri,string data)
-    {
-        var url = string.Format("{0}/{1}", serverPath, uri);
-
-         var request = new UnityWebRequest(url, "POST");
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
-        //Debug.Log(bodyRaw.Length);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-          //응답을 기다립니다.
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
-           
-        }
-        else
-        {
-            byte[] results = request.downloadHandler.data;
- 
-            //Debug.Log(results.Length);
- 
-            var message = Encoding.UTF8.GetString(results);
- 
-            //Debug.Log(message);     //응답했다.!
-
-            InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
-            List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
-
-            int count =0;
-            foreach (InspectionDto c in list1)
-            {
-                count++;
-                Debug.Log(count.ToString() + " : " + c.admin_name+ "/" + c.admin_etc + "/" + c.state);
-            }
-        }
-    }
-
     //애져앵커 키값 조회
     private IEnumerator InsRowKeyPostIdx(string uri,string data)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
 
-         var request = new UnityWebRequest(url, "POST");
+        var request = new UnityWebRequest(url, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
        
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -469,7 +440,6 @@ public class SIMS_Demo : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.Log("점검 ID " + _Ins.idx.ToString() + "이 조회에 실패했습니다. " + request.responseCode);
-           
         }
         else
         {
@@ -483,7 +453,7 @@ public class SIMS_Demo : MonoBehaviour
             foreach (InspectionDto c in list1)
             {
                 Debug.Log("sims_demo - rowkey : " + c.rowkey);
-                GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text = c.rowkey.ToString();
+                ARKeyValue.text = c.rowkey.ToString();
             }
         }
     }
@@ -492,7 +462,7 @@ public class SIMS_Demo : MonoBehaviour
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
 
-         var request = new UnityWebRequest(url, "POST");
+        var request = new UnityWebRequest(url, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
        
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -500,7 +470,7 @@ public class SIMS_Demo : MonoBehaviour
         
         request.SetRequestHeader("Content-Type", "application/json");
 
-          //응답을 기다립니다.
+        //응답을 기다립니다.
         yield return request.SendWebRequest();
 
         if (request.result != UnityWebRequest.Result.Success)
@@ -513,8 +483,10 @@ public class SIMS_Demo : MonoBehaviour
             byte[] results = request.downloadHandler.data;
             var message = Encoding.UTF8.GetString(results);
             Debug.Log(message);     //응답했다.
+
             InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
             List<InspectionDto> list1 = new List<InspectionDto>(ins.data);
+
             int count =0;
             foreach (InspectionDto c in list1)
             {
@@ -532,7 +504,7 @@ public class SIMS_Demo : MonoBehaviour
         }
     }
 
-     private void InsModelIdx(string uri)
+    private void InsModelIdx(string uri)
     {
         var url = string.Format("{0}/{1}", serverPath, uri);
         string responseText = string.Empty;
@@ -571,12 +543,10 @@ public class SIMS_Demo : MonoBehaviour
         List<InspectionDto> list = new List<InspectionDto>(jObjText.data);
 
         GameObject Item = Resources.Load<GameObject>("Item_Panel");
-        //GameObject Item = Resources.Load<GameObject>("Item_Panel_1");
 
         listCount = list.Count;
         int yValue = 0;
         int Count = 0;
-        //defectIdxList.Clear();
     
         foreach(InspectionDto j in list)
         {
@@ -584,8 +554,6 @@ public class SIMS_Demo : MonoBehaviour
             index.name = "item"+Count;
             index.transform.SetParent(GameObject.Find("Content").transform);
             yValue -= 200;
-
-            //defectIdxList.Add(j.idx);
 
             //이미지 넣기
             byte[] newBytes22 = j.ins_bytes;
@@ -599,17 +567,13 @@ public class SIMS_Demo : MonoBehaviour
             GameObject imageObj = GameObject.Find("item"+Count).transform.Find("Item_Image").gameObject;
             Image image = imageObj.GetComponent<Image>();
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
-            image.sprite = sprite; 
+            image.sprite = sprite;
 
-            //하자 리스트 정보값 출력
+            //하자 리스트 정보값 출력 
             GameObject.Find("item"+Count).transform.Find("ItemInsType_Text").GetComponent<Text>().text = j.space_name_en+"_"+j.object_name_en+"_"+j.damage_name_en;
-
             GameObject.Find("item"+Count).transform.Find("ItemInsDate_Text").GetComponent<Text>().text = "날짜 : "+j.ins_date; 
-
             GameObject.Find("item"+Count).transform.Find("ItemInsInspector_Text").GetComponent<Text>().text ="점검자 : "+j.inspector_name; 
-
             GameObject.Find("item"+Count).transform.Find("ItemInsLoc_Text").GetComponent<Text>().text ="하자 위치 : "+j.damage_loc_x+" / "+j.damage_loc_y+" / "+j.damage_loc_z; 
-
             GameObject.Find("item"+Count).transform.Find("ItemInsETC_Text").GetComponent<Text>().text ="기타사항 : "+j.inspector_etc;
 
             Count++;
@@ -656,7 +620,7 @@ public class SIMS_Demo : MonoBehaviour
 
         Texture2D texture = new Texture2D(0, 0);
         texture.LoadImage(newBytes22);
-
+        
         GameObject imageObj = GameObject.Find("Canvas").transform.Find("PanelSelect").transform.Find("imageView").gameObject;
         Image image = imageObj.GetComponent<Image>();
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.0f), 1.0f);
@@ -684,11 +648,8 @@ public class SIMS_Demo : MonoBehaviour
         else
         {
             byte[] results = request.downloadHandler.data;
- 
             //Debug.Log(results.Length);  //14 
- 
             var message = Encoding.UTF8.GetString(results);
- 
             //Debug.Log(message);     //응답했다.!
 
             InsResponse ins = (InsResponse)JsonUtility.FromJson<InsResponse>(message);
@@ -701,7 +662,6 @@ public class SIMS_Demo : MonoBehaviour
                 GameObject Defectpoint= Resources.Load<GameObject>("DefectPrefab/Defect");  
                 GameObject Instance = (GameObject) Instantiate(Defectpoint, DefectPosition,a);
                 Instance.name = c.idx.ToString();
-
             }
         }
     }
@@ -716,7 +676,7 @@ public class SIMS_Demo : MonoBehaviour
         request.Timeout = 30 * 10000; // 30초
         request.ContentType = "application/json; charset=utf-8";
 
-        string postData ="{\"idx\" : "+SingletonModelIdx.instance.ModelIdx+"}"; //  마커에서 모델 idx 받아오면 나중에 바꿔줘야함
+        string postData ="{\"idx\" : " + SingletonModelIdx.instance.ModelIdx + "}"; //  마커에서 모델 idx 받아오면 나중에 바꿔줘야함
         
         byte[] byteArray =Encoding.UTF8.GetBytes(postData);
 
@@ -730,7 +690,6 @@ public class SIMS_Demo : MonoBehaviour
             if (status != HttpStatusCode.OK)
             {
                 Debug.Log("모델 ID " + SingletonModelIdx.instance.ModelIdx + "이 조회에 실패했습니다. " + status);
-           
             }
             Stream respStream = resp.GetResponseStream();
             using (StreamReader sr = new StreamReader(respStream))
@@ -751,10 +710,8 @@ public class SIMS_Demo : MonoBehaviour
 
         string write_path = Application.persistentDataPath +"/"+ list[0].model_3dfile_name; 
         
-        // SimsLog(write_path);
         File.WriteAllBytes(write_path, msgByte);
 
-        Debug.Log(list[0].model_3dfile_name);
         StartCoroutine(LoadFromMemoryAsync(write_path, list[0].model_3dfile_name));
     }
 
@@ -781,18 +738,14 @@ public class SIMS_Demo : MonoBehaviour
 
     public void Back()
     {
-       Transform back = GameObject.Find("Canvas").transform.Find("Panel");
-        back.gameObject.SetActive(false);
+        Panel.gameObject.SetActive(false);
     }
 
     private void On_List()
     {
-        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
-        On_Panel.gameObject.SetActive(true);
-        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
-        On_btn.gameObject.SetActive(false);
-        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
-        Off_btn.gameObject.SetActive(true);
+        List_Panel.SetActive(true);
+        List_on_btn.SetActive(false);
+        List_off_btn.SetActive(true);
 
     }
 
@@ -802,15 +755,12 @@ public class SIMS_Demo : MonoBehaviour
         for(int i=0; i<listCount; i++)
         {
             Destroy(GameObject.Find("item"+count));
-            //Destroy(GameObject.Find("item@"+defectIdxList[i]));
             count++;
         }
-        Transform On_Panel = GameObject.Find("Canvas").transform.Find("List_Panel");
-        On_Panel.gameObject.SetActive(false);
-        Transform On_btn = GameObject.Find("Canvas").transform.Find("List_on_btn");
-        On_btn.gameObject.SetActive(true);
-        Transform Off_btn = GameObject.Find("Canvas").transform.Find("List_off_btn");
-        Off_btn.gameObject.SetActive(false);
+        
+        List_Panel.gameObject.SetActive(false);
+        List_on_btn.SetActive(true);
+        List_off_btn.SetActive(false);
     }
 
 }

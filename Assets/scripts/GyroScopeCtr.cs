@@ -5,19 +5,23 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class GyroScopeCtr : MonoBehaviour
 {
-    GameObject Capsule;
-    Rigidbody rb;
-    Text x;
-    Text y;
-    float speed=0.15f;
-    bool isBorder;
-    bool Istri;
-    Transform xText;
-    Transform yText;
-    Vector3 m_PlayerRot;
+    private GameObject Capsule;
+    private Transform xText;
+    private Transform yText;
+    
+    private Text x;
+    private Text y;
+    private Text ARText;
 
-    static double GyroRotY;
-    Text ARText;
+    private Rigidbody rb;
+
+    private Vector3 m_PlayerRot;
+
+    private float speed=0.15f;
+    private static double GyroRotY;
+
+    private bool isBorder;
+    private bool Istri;
 
     void Start()
     {

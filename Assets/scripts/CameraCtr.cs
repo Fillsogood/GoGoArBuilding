@@ -6,7 +6,7 @@ using UnityEngine.UI;
 //script to make secondary camera follow user.
 public class CameraCtr : MonoBehaviour
 {  
-    GameObject Target; // Capsule 게임오브젝트 가져오기
+    public GameObject Target; // Capsule 게임오브젝트 가져오기
     public Transform TargetCapsule;
     public Transform Navigation;
     public Scrollbar scrollbar;
@@ -16,6 +16,7 @@ public class CameraCtr : MonoBehaviour
         scrollbar.onValueChanged.AddListener((float val)=>ScrollbarCallback(val));
 
     }
+
     void ScrollbarCallback(float value)
     {
         Camera navigation = GameObject.Find("NavigationCamera").GetComponent<Camera>();
@@ -28,6 +29,7 @@ public class CameraCtr : MonoBehaviour
             navigation.orthographicSize=value*150f;
         }
     }
+
     void Update()
     {
         if(TargetCapsule==null)
@@ -36,10 +38,7 @@ public class CameraCtr : MonoBehaviour
 
 			TargetCapsule = Target.transform;
         }
-        else
-        {
-          
-        }
+        else { }
     }
 
     private void LateUpdate()
@@ -47,5 +46,4 @@ public class CameraCtr : MonoBehaviour
 		Navigation.position =new Vector3(TargetCapsule.position.x,TargetCapsule.position.y+20f,TargetCapsule.position.z);
 		Navigation.LookAt(TargetCapsule);
     }
-
 }

@@ -5,91 +5,50 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class DefectPanel : MonoBehaviour
 {
-    Transform Map;
-    SIMS_Demo _Sims;
-    Text ARKeyValueText;
-    public int AnchorKey{get;set;}
+    public GameObject PanelSelect;
+    public GameObject Panel;
+    public Text txtGyrovalue;
 
+    private SIMS_Demo _Sims;
+    
     void Start()
     {
         _Sims = GameObject.Find("Manager").GetComponent<SIMS_Demo>();
-        Text ARKeyValueText = GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>();
-        Map = GameObject.Find("Canvas").transform.Find("MiniMap");
     }
 
-   public void OnTriggerEnter (Collider other)
-    {    
-       //GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
-        
-        if(other.tag=="defect"&&Map.gameObject.activeSelf == true)
+    public void OnTriggerEnter (Collider other)
+    {
+        if(other.tag == "defect")
         {    
             _Sims.DefectIdx= int.Parse(this.name);
 
             _Sims.OnClick_RowKeySelect();
-            Debug.Log("======DefectPanel - AnchorKey : " + AnchorKey.ToString() + "======");
-            // GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text = AnchorKey.ToString();
 
             GameObject.Find("Canvas").transform.Find("MiniMap").gameObject.SetActive(false);
             GameObject.Find("Canvas").transform.Find("LocateFlowButton").GetComponent<Button>().interactable = true;
             GameObject.Find("Canvas").transform.Find("AdminDefectBtn").GetComponent<Button>().interactable = true;
+            GameObject.Find("Canvas").transform.Find("Switch_on_btn").gameObject.SetActive(false);
+            GameObject.Find("Canvas").transform.Find("Switch_off_btn").gameObject.SetActive(true);
         }
         else if (other.tag != "defect")
         {
             GameObject.Find("Canvas").transform.Find("LocateFlowButton").GetComponent<Button>().interactable = false;
             GameObject.Find("Canvas").transform.Find("AdminDefectBtn").GetComponent<Button>().interactable = false;
+            GameObject.Find("Canvas").transform.Find("Switch_on_btn").gameObject.SetActive(true);
+            GameObject.Find("Canvas").transform.Find("Switch_off_btn").gameObject.SetActive(false);
         }
     }
 
-    // public void OpenSelectPanel()
-    // {
-    //     GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
-    //     Defectpanel.SetActive(false);
-    //     GameObject Panal= GameObject.Find("Canvas").transform.Find("PanelSelect").gameObject;
-    //     Panal.SetActive(true);
-    //    /*
-    //     Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");
-    //     Map = GameObject.Find("Canvas").transform.Find("MiniMap");
-    //     Btn_BackAr = GameObject.Find("Canvas").transform.Find("Btn_BackAr");
-    //     Defect_information.gameObject.SetActive(false); //ar넘어가면 사라지는 패널
-    //     Map.gameObject.SetActive(false);
-    //     Btn_BackAr.gameObject.SetActive(true); 
+    public void OpenPanel()
+    {
+        PanelSelect.SetActive(false);
+        Panel.SetActive(true);
 
+        txtGyrovalue.text = GyroScopeCtr.GetGyroData();
+    }
 
-    //     GameObject Capsul =GameObject.Find("Capsules(Clone)").transform.Find("Capsule").gameObject;    
-    //     GameObject CapBuildingStructuresul = GameObject.Find("BuildingStructure(Clone)");
-
-
-    //     Capsul.SetActive(false);
-       
-       
-    //     for(int i=0;i<2;i++) //i 길이는 DB에서 Length로
-    //     {
-    //         GameObject Defect = GameObject.Find("Defect(Clone)");
-    //         Defect.SetActive(false);
-    //     }
-        
-    //     CapBuildingStructuresul.SetActive(false);
-    //     */
-    // }
-   public void CloseBtn()
-   {
-       GameObject Defectpanel= GameObject.Find("Canvas").transform.Find("Defect_Panel").gameObject;
-        Defectpanel.SetActive(false);
-        /*
-        Defect_information = GameObject.Find("Canvas").transform.Find("Defect_information");          
-        Defect_information.gameObject.SetActive(false);
-        //하자 이미지 끄기
-        GameObject DefectImg = GameObject.Find("GameObject").transform.Find("DefectCube").gameObject;
-        DefectImg.SetActive(false);
-        */      
-   }
-   public void OpenPanel()
-   {
-        GameObject Panal= GameObject.Find("Canvas").transform.Find("PanelSelect").gameObject;
-        Panal.SetActive(false);
-        GameObject selectpanel= GameObject.Find("Canvas").transform.Find("Panel").gameObject;
-        selectpanel.SetActive(true);
-
-        GameObject.Find("Canvas").transform.Find("Panel").transform.Find("txtGyrovalue").GetComponent<Text>().text = GyroScopeCtr.GetGyroData();
-   }
+    public void OpenSelectPanel()
+    {
+        PanelSelect.SetActive(true);
+    }
 }

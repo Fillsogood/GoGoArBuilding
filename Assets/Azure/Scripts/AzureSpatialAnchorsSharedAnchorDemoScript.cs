@@ -338,6 +338,7 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
             {
                 long anchorNumber;
                 string inputText = GameObject.Find("Canvas").transform.Find("ARKeyValue").GetComponent<Text>().text; //서버에서 받아오고 싱글톤 써서 키값 불러오기
+                Debug.Log("Aqure : " + inputText);
                 if (!long.TryParse(inputText, out anchorNumber))
                 {
                     Debug.Log("====8====");

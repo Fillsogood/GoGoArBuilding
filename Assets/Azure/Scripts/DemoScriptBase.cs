@@ -164,6 +164,7 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
             if (spawnedObject != null)
             {
                 Destroy(spawnedObject);
+                
                 spawnedObject = null;
             }
 
@@ -558,7 +559,7 @@ namespace Microsoft.Azure.SpatialAnchors.Unity.Examples
                     GameObject anchorGameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     anchorGameObject.transform.localScale = Vector3.one * 0.1f;
                     anchorGameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Legacy Shaders/Diffuse");
-                    anchorGameObject.GetComponent<MeshRenderer>().material.color = Color.blue;
+                    anchorGameObject.GetComponent<MeshRenderer>().material.color = Color.red;
 
                     // Link to Cloud Anchor
                     anchorGameObject.AddComponent<CloudNativeAnchor>().CloudToNative(cloudSpatialAnchor);
